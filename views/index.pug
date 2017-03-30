@@ -1,0 +1,20 @@
+extends layout
+
+block content
+	h1 Prices
+	h3 Per night : #{pricePerNight} $
+	h3 Per week : #{pricePerWeek} $
+	h1 Weeks
+	ul
+		each week, index in weeks
+			li WEEK #{index + 1}
+				ul
+					each date in week
+						li #{week}
+	h1 users
+	ul
+		each dates, name in participants
+			li #{name}
+				ul
+					each date in dates
+						li #{date}
