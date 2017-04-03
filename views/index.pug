@@ -1,20 +1,26 @@
 extends layout
 
 block content
+	h1 #{retreat.name}
+	p #{retreat.description}
+	each pictureUrl in retreat.pictures
+		img(src=pictureUrl)
+	p #{retreat.address}
+	p: a(href=retreat.houseUrl) The house
 	h1 Prices
-	h3 Per night : #{pricePerNight} $
-	h3 Per week : #{pricePerWeek} $
+	h3 Per night : #{retreat.price.perNight} €
+	h3 Per week : #{retreat.price.perWeek} €
 	h1 Weeks
 	ul
-		each week, index in weeks
-			li WEEK #{index + 1}
+		each week, index in retreat.weeks
+			li WEEK #{index + 1} : #{week.beds} beds available
 				ul
-					each date in week
-						li #{week}
-	h1 users
+					each day in week.days
+						li #{day.id} => #{day.name} #{day.number} #{day.month}
+	h1 Participants
 	ul
-		each dates, name in participants
-			li #{name}
+		each participant in participants
+			li #{participant.name} #{participant.slack}
 				ul
-					each date in dates
-						li #{date}
+					each day in participant.days
+						li #{day.id} => #{day.name} #{day.number} #{day.month}
