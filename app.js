@@ -4,8 +4,10 @@ var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
-var connect = require('connect')
+
 var sassMiddleware = require('node-sass-middleware')
+var postcssMiddleware = require('postcss-middleware');
+var autoprefixer = require('autoprefixer');
 
 var index = require('./routes/index')
 
@@ -28,6 +30,14 @@ app.use('/stylesheets', sassMiddleware({
 	debug: true,
 	outputStyle: 'expanded'
 }))
+
+app.use('/stylesheets', postcssMiddleware({
+	src: function(req) {
+		return path.join(__dirname, 'public', 'stylesheets', req.path)
+	},
+	plugins: [autoprefixer()]
+}))
+
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
