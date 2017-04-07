@@ -31,7 +31,6 @@ function addBedsCountPerWeek(retreat, participants) {
 		retreat.weeks[i].beds = bedsPerWeek[i]
 	}
 
-	console.log(retreat)
 	return retreat
 }
 

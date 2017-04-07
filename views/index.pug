@@ -3,6 +3,7 @@ extends layout
 block content
 	h1 #{name}
 	p Slack channel: ##{channel}
+	p Organized by: #{organizer.name} (#{organizer.slack})
 	p #{description}
 	each pictureUrl in house.pictures
 		img(src=pictureUrl)
@@ -12,8 +13,8 @@ block content
 	p: a(href=house.url) The house
 	p House Rent Price: #{house.price}€
 	h1 Prices
-	p Per night: #{price.perNight} €
-	p Per week: #{price.perWeek} €
+	p Per night: #{price.perNight}€
+	p Per week: #{price.perWeek}€ (Save #{price.weekDiscount}€)
 	h1 Weeks
 	ul
 		each week, index in weeks
