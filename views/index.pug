@@ -1,18 +1,22 @@
 extends layout
 
 block content
-	h1 #{retreat.name}
-	p #{retreat.description}
-	each pictureUrl in retreat.pictures
+	h1 #{name}
+	p Slack channel: ##{channel}
+	p #{description}
+	each pictureUrl in house.pictures
 		img(src=pictureUrl)
-	p #{retreat.address}
-	p: a(href=retreat.houseUrl) The house
+	p #{location.fullAddress}
+	p #{location.city}, #{location.country}
+	p Lat: #{location.latitude} Long: #{location.longitude}
+	p: a(href=house.url) The house
+	p House Rent Price: #{house.price}€
 	h1 Prices
-	h3 Per night : #{retreat.price.perNight} €
-	h3 Per week : #{retreat.price.perWeek} €
+	p Per night: #{price.perNight} €
+	p Per week: #{price.perWeek} €
 	h1 Weeks
 	ul
-		each week, index in retreat.weeks
+		each week, index in weeks
 			li WEEK #{index + 1} : #{week.beds} beds available
 				ul
 					each day in week.days

@@ -104,10 +104,9 @@ function getParticipants() {
 
 				var formattedParticipants = formatParticipants(participants)
 				getParticipantsDetail(formattedParticipants).then(function (combinedParticipants) {
-					resolve({
-						retreat: bedsCounter.addBedsCountPerWeek(retreatObject, combinedParticipants),
-						participants: combinedParticipants
-					})
+					var result = bedsCounter.addBedsCountPerWeek(retreatObject, combinedParticipants)
+					result.participants = combinedParticipants
+					resolve(result)
 				}, function (error) {
 					reject(err)
 				})

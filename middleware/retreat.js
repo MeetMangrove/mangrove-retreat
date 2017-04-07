@@ -20,17 +20,23 @@ function formatRetreat(retreat) {
 		weeks: dateFormatter.formatWeeks(retreat.get('First Night'), retreat.get('Last Night')),
 		name: retreat.get('Name'),
 		description: retreat.get('Description'),
-		pictures: formatPictures(retreat.get('Pictures')),
-		houseUrl: retreat.get('House Url'),
-		beds: retreat.get('Beds'),
-		address: retreat.get('Address'),
+		channel: retreat.get('Channel'),
+		house : {
+			url: retreat.get('House Url'),
+			beds: retreat.get('Beds'),
+			pictures: formatPictures(retreat.get('Pictures')),
+			rentPrice: formatPictures(retreat.get('House Rent Price'))
+		},
 		price: {
 			perWeek: retreat.get('Price Per Week'),
 			perNight: retreat.get('Price Per Night')
 		},
 		location: {
 			latitude: retreat.get('Latitude'),
-			longitude: retreat.get('Longitude')
+			longitude: retreat.get('Longitude'),
+			fullAddress: retreat.get('Address'),
+			city: retreat.get('City'),
+			country: retreat.get('Country')
 		}
 	}
 }

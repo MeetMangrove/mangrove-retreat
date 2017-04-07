@@ -12,7 +12,7 @@ function haveDaysInCommon(days1, days2) {
 }
 
 function addBedsCountPerWeek(retreat, participants) {
-	var beds = retreat.beds
+	var beds = retreat.house.beds
 	var bedsPerWeek = []
 
 	for (var i = 0; i < retreat.weeks.length; i++) {
