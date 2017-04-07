@@ -1,4 +1,4 @@
-var airtable = require('./airtable.js')
+var airtable = require('../helpers/airtable.js')
 var dateFormatter = require('../helpers/dateFormatter.js')
 
 function getRetreat() {
@@ -33,7 +33,7 @@ function getRetreat() {
 			channel: retreat.get('Channel'),
 			house : formatHouse(retreat),
 			price: formatPrice(retreat),
-			location: formatLocation(retreat)
+			location: formatLocation(retreat),
 		}
 
 		function formatHouse(retreat) {

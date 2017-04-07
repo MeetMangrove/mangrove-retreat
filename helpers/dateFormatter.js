@@ -1,11 +1,12 @@
 function formatDay(date) {
-	const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+	const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Nov', 'Dec']
 	return {
 		id: months[date.getMonth()] + date.getDate(),
 		name: weekDays[date.getDay()],
 		number: date.getDate(),
-		month: months[date.getMonth()]
+		month: months[date.getMonth()],
+		date: date
 	}
 }
 
