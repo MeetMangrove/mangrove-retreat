@@ -18,7 +18,6 @@ function compute(params) {
 		firstNight = new Date(params.firstNight)
 		lastNight = new Date(params.lastNight)
 		const retreatId = params.retreatId
-
 		if (typeof firstNight === 'undefined' || typeof lastNight === 'undefined'
 			|| retreatId === 'undefined') {
 			reject('Params are not correct. You should send retreatId, firstNight and lastNight')
