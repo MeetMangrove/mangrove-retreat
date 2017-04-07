@@ -9,7 +9,7 @@ var price = require('../middleware/price.js')
 
 router.get('/', function(req, res, next) {
 	retreat.get().then(function (formattedRetreat) {
-		participants.getDetailed().then(function (formattedParticipants) {
+		participants.get(formattedRetreat.id).then(function (formattedParticipants) {
 			var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
 			result.participants = formattedParticipants
 			res.render('index', result)
@@ -18,7 +18,6 @@ router.get('/', function(req, res, next) {
 })
 
 router.post('/computeprice', function(req, res, next) {
-	console.log(req.body)
 	price.compute(req.body).then(function (result) {
 		res.send(result)
 	}, function (err) { next(err) })

@@ -28,10 +28,8 @@ function compute(params) {
 
 		getRetreat(retreatId).then(function () {
 			if (isFullWeekStay()) {
-				console.log('FULL WEEK STAY');
 				resolve(getPricesForFullWeekStay())
 			} else {
-				console.log('CUSTOM STAY');
 				resolve(getPricesForCustomStay())
 			}
 		})

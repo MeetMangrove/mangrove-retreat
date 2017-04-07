@@ -9,6 +9,7 @@ block content
 		img(src=pictureUrl)
 	p #{location.fullAddress}
 	p #{location.city}, #{location.country}
+	p #{localTime}, #{temperature}°C
 	p Lat: #{location.latitude} Long: #{location.longitude}
 	p: a(href=house.url) The house
 	p House Rent Price: #{house.price}€

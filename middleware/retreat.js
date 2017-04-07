@@ -1,5 +1,6 @@
 var airtable = require('../helpers/airtable.js')
 var dateFormatter = require('../helpers/dateFormatter.js')
+var weather = require('./weather.js')
 
 function getRetreat() {
 	return new Promise(function (resolve, reject) {
@@ -17,9 +18,13 @@ function getRetreat() {
 				getOrganizer(retreat).then(function (organizer) {
 					var formattedRetreat = formatRetreat(retreat)
 					formattedRetreat.organizer = organizer
-					resolve(formattedRetreat)
-				},
-				function (error) { reject(error) })
+					weather.getTemperatureAndLocalTime(retreat.get('Latitude'), retreat.get('Longitude')).then(
+						function (result) {
+							formattedRetreat.localTime = result.localTime
+							formattedRetreat.temperature = result.temperature
+							resolve(formattedRetreat)
+					})
+				})
 			}
 		})
 	})

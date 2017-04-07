@@ -3,33 +3,28 @@ var retreat = require('./retreat.js')
 var dateFormatter = require('../helpers/dateFormatter.js')
 var bedsCounter = require('../helpers/bedsCounter.js')
 
-function getParticipants() {
+function getParticipants(retreatId) {
 	return new Promise(function (resolve, reject) {
 		var participants = []
 
-		// Get retreat
-		retreat.get().then(function (retreatObject) {
-			// Get participants
-			const formula = "{Retreat Id} = '" + retreatObject.id + "'"
-			airtable.participants.select({
-				filterByFormula: formula
-			}).eachPage(function page(records, fetchNextPage) {
-				records.forEach(function(record) {
-					participants.push(record)
-				})
-
-				fetchNextPage()
-			}, function done(err) {
-				if (err) { reject(err); return }
-				resolve(participants)
+		airtable.participants.select({
+			filterByFormula:  "{Retreat Id} = '" + retreatId + "'"
+		}).eachPage(function page(records, fetchNextPage) {
+			records.forEach(function(record) {
+				participants.push(record)
 			})
+
+			fetchNextPage()
+		}, function done(err) {
+			if (err) { reject(err); return }
+			resolve(participants)
 		})
 	})
 }
 
-function getFormattedParticipants() {
+function getFormattedParticipants(retreatId) {
 	return new Promise(function (resolve, reject) {
-		getParticipants().then(function (participants) {
+		getParticipants(retreatId).then(function (participants) {
 			resolve(formatParticipants(participants))
 		})
 	})
@@ -52,9 +47,9 @@ function getFormattedParticipants() {
 	}
 }
 
-function getFormattedParticipantsIncludingDetails() {
+function getFormattedParticipantsIncludingDetails(retreatId) {
 	return new Promise(function (resolve, reject) {
-		getFormattedParticipants().then(function (formattedParticipants) {
+		getFormattedParticipants(retreatId).then(function (formattedParticipants) {
 			getParticipantsDetail(formattedParticipants).then(function (detailedParticipants) {
 				resolve(getCombinedParticipants(formattedParticipants, detailedParticipants))
 			})
@@ -118,6 +113,5 @@ function getFormattedParticipantsIncludingDetails() {
 }
 
 module.exports = {
-	getDetailed: getFormattedParticipantsIncludingDetails,
-	get: getParticipants
+	get: getFormattedParticipantsIncludingDetails
 }
