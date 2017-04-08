@@ -98,7 +98,7 @@ function getOrganizer(retreat) {
 		return {
 			id: organizer.id,
 			name: organizer.get('Name'),
-			slack: organizer.get('Slack Handle')
+			username: organizer.get('Slack Handle')
 		}
 	}
 }

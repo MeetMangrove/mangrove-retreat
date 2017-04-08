@@ -1,0 +1,47 @@
+.day-item {
+  text-align: center;
+  position: relative;
+  line-height: 20px;
+
+  div {
+    position: relative;
+    z-index: 1;
+  }
+
+  &-number {
+    font-size: 18px;
+    font-weight: 100;
+  }
+
+  .day-item-color {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: .2;
+
+    &-container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+      right: 0;
+      background: white;
+
+    }
+  }
+
+  &.is-first {
+    .day-item-color {
+      border-radius: 20em 0 0 20em;
+    }
+  }
+
+  &.is-last {
+    .day-item-color {
+      border-radius: 0 20em 20em 0;
+    }
+  }
+}
