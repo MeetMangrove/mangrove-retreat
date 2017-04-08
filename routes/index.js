@@ -1,40 +1,35 @@
 var express = require('express');
-var router = express.Router();
+var router = express.Router()
 
-/* GET home page. */
+var bedsCounter = require('../helpers/bedsCounter.js')
+
+var participants = require('../middleware/participants.js')
+var retreat = require('../middleware/retreat.js')
+var price = require('../middleware/price.js')
+var auth = require('../middleware/auth.js')
+
 router.get('/', function(req, res, next) {
-  res.render('index', {
-		pricePerNight: 30,
-		pricePerWeek: 180,
-		weeks: [
-			[new Date('June 3, 2017'), new Date('June 4, 2017'), new Date('June 5, 2017'),
-				new Date('June 6, 2017'), new Date('June 7, 2017'), new Date('June 8, 2017'),
-				new Date('June 9, 2017')],
-			[new Date('June 10, 2017'), new Date('June 11, 2017'), new Date('June 12, 2017'),
-				new Date('June 13, 2017'), new Date('June 14, 2017'), new Date('June 15, 2017'),
-				new Date('June 16, 2017')]
-		],
-		participants: {
-			joe: [new Date('June 3, 2017'), new Date('June 4, 2017'), new Date('June 5, 2017'),
-				new Date('June 6, 2017')],
-			paul: [new Date('June 3, 2017'), new Date('June 4, 2017'), new Date('June 5, 2017'),
-				new Date('June 6, 2017'), new Date('June 7, 2017'), new Date('June 8, 2017'),
-				new Date('June 9, 2017')],
-			anna: [new Date('June 10, 2017'), new Date('June 11, 2017'), new Date('June 12, 2017'),
-				new Date('June 13, 2017'), new Date('June 14, 2017'), new Date('June 15, 2017'),
-				new Date('June 16, 2017')],
-			fred: [new Date('June 10, 2017'), new Date('June 11, 2017'), new Date('June 12, 2017'),
-				new Date('June 13, 2017'), new Date('June 14, 2017'), new Date('June 15, 2017')],
-			remi: [new Date('June 10, 2017'), new Date('June 11, 2017'), new Date('June 12, 2017'),
-				new Date('June 13, 2017'), new Date('June 14, 2017'), new Date('June 15, 2017'),
-				new Date('June 16, 2017')],
-			victor: [new Date('June 3, 2017'), new Date('June 4, 2017'), new Date('June 5, 2017'),
-				new Date('June 6, 2017'), new Date('June 7, 2017'), new Date('June 8, 2017'),
-				new Date('June 9, 2017'), new Date('June 10, 2017'), new Date('June 11, 2017'),
-				new Date('June 12, 2017'), new Date('June 13, 2017'), new Date('June 14, 2017'),
-				new Date('June 15, 2017'), new Date('June 16, 2017')]
-		}
+	retreat.get().then(function (formattedRetreat) {
+		participants.get(formattedRetreat.id).then(function (formattedParticipants) {
+			var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+			result.participants = formattedParticipants
+			res.render('index', result)
+		})
+	}, function (error) { next(error) })
+})
+
+router.get('/auth', function(req, res, next) {
+	auth.checkCode(req.query.code).then(function (currentUser) {
+		res.redirect('/?currentUser=' + currentUser)
+	}, function (error) {
+		next(error)
 	})
+})
+
+router.post('/computeprice', function(req, res, next) {
+	price.compute(req.body).then(function (result) {
+		res.send(result)
+	}, function (err) { next(err) })
 })
 
 module.exports = router;
