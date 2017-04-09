@@ -1,5 +1,6 @@
 extends layout
 block content
+  include includes/hero
   .booking-board-lines
     each week, index in weeks
       .booking-board-line
@@ -33,15 +34,15 @@ block content
           window.open('slack://user?team=T0QJH8NJK&id=U1NK4E3QE')
         }
       })
-      var selectedDays = $(this).data('days').split(' ').slice(0, -1);
-      computePrice($(this), selectedDays)
+      var selectedDaysIds = $(this).data('days').split(' ').slice(0, -1);
+      computePrice($(this), selectedDaysIds)
       var firstDaySelected = false
       var lastDaySelected = false
       $(this).addClass('is-active')
       $(this).find('span').html('Pay $200')
       $('.booking-board-footer').removeClass('step-1').addClass('step-2')
-      for (var i = 0, len = selectedDays.length; i < len; i++) {
-        $('#' + selectedDays[i]).addClass('is-active')
+      for (var i = 0, len = selectedDaysIds.length; i < len; i++) {
+        $('#' + selectedDaysIds[i]).addClass('is-active')
       }
 
       var divs = $('.booking-board-days-selector .day-item.is-active')
@@ -66,9 +67,9 @@ block content
 
            if($('.booking-board-days-selector .day-item.is-active').attr('id') == $(this).attr('id')) return
 
-           selectedDays = [];
-           selectedDays.push($(this).attr('id'))
-           selectedDays.push($('.booking-board-days-selector .day-item.is-active').attr('id'))
+           selectedDaysIds = [];
+           selectedDaysIds.push($(this).attr('id'))
+           selectedDaysIds.push($('.booking-board-days-selector .day-item.is-active').attr('id'))
 
            if(isBefore($('.booking-board-days-selector .day-item.is-active'), $(this))) {
             divs = $(this).prevUntil($('.booking-board-days-selector .day-item.is-active')).addClass('is-active is-visible')
@@ -76,21 +77,17 @@ block content
             divs = $(this).nextUntil($('.booking-board-days-selector .day-item.is-active')).addClass('is-active is-visible')
            }
            for (var i = 0, len = divs.length; i < len; i++) {
-             selectedDays.push(divs[i].getAttribute('id'))
+             selectedDaysIds.push(divs[i].getAttribute('id'))
            }
-           selectedDays.reverse()
            $(this).addClass('is-active  is-visible')
-           $('.booking-board-footer-title span').html('Great!')
-           $('.booking-board-footer-title i').html('')
+
            lastDaySelected = true
            firstDaySelected = false
-           computePrice($('.booking-board-btn.is-active'), selectedDays)
+           computePrice($('.booking-board-btn.is-active'), selectedDaysIds)
         } else {
           $(this).addClass('is-active is-visible')
           firstDaySelected = true
           lastDaySelected = false
-          $('.booking-board-footer-title span').html('Select your last day')
-          $('.booking-board-footer-title i').html('')
         }
 
       })
@@ -98,18 +95,14 @@ block content
       $('.booking-board-days-selector').on('mouseenter', function() {
         if(!firstDaySelected) {
           $('.booking-board-days-selector .day-item').removeClass('is-active')
-          $('.booking-board-footer-title span').html('Select your first day')
-          $('.booking-board-footer-title i').html('')
         }
       }).mouseleave(function(){
         if(!firstDaySelected) {
           lastDaySelected = false
-          $('.booking-board-footer-title span').html('Selected days')
-          $('.booking-board-footer-title i').html('(' + selectedDays.length + ')')
 
           $('.booking-board-days-selector .day-item').removeClass('is-active')
-          for (var i = 0, len = selectedDays.length; i < len; i++) {
-            $('#' + selectedDays[i]).addClass('is-active is-visible')
+          for (var i = 0, len = selectedDaysIds.length; i < len; i++) {
+            $('#' + selectedDaysIds[i]).addClass('is-active is-visible')
           }
 
         }
@@ -118,26 +111,48 @@ block content
 
     function computePrice(that, selectedDays) {
       that.addClass('is-loading')
+      $('.booking-board-footer-title').addClass('is-loading')
+
+      selectedDays = datetify(selectedDays)
+
       $.post('computeprice',
         { retreatId: 'recsNFkyMtlBf8RVg',
-          firstNight: selectedDays[0] + ` ${new Date().getFullYear()}`,
-          lastNight:  selectedDays[selectedDays.length - 1] + ` ${new Date().getFullYear()}`
+          firstNight: selectedDays[0],
+          lastNight:  selectedDays[selectedDays.length - 1]
         }, function(data){
           that.removeClass('is-loading')
+          $('.booking-board-footer-title').removeClass('is-loading')
+
           var text
           if(data.canBook) {
             text = 'Pay ' + data.price + "€"
             that.addClass('can-book')
             that.removeClass('redirect-to-slack')
           } else {
-            text = "DM " + organiserUsername + " (" + data.price + " €)"
+            text = "DM " + organiserUsername
             that.removeClass('can-book')
             that.addClass('redirect-to-slack')
 
           }
           that.find('span').text(text)
+          $('.booking-board-footer-title .data-item-header').html(data.price + '€')
+          $('.booking-board-footer-title .data-item-footer').html(selectedDays.length + ' nights')
 
       })
+    }
+
+    function datetify(array) {
+      array = array.map(function(item, i) {
+        return $('#' + item).data('date')
+      })
+
+      array = array.sort(function(a,b) {
+        return new Date(a).getTime() - new Date(b).getTime()
+      });
+
+
+      return array
+
     }
 
     function isBefore(el1, el2) {
@@ -164,3 +179,24 @@ block content
             }
         } catch (ex) {}
     }
+    var ink, d, x, y;
+    $(".ripplelink").click(function(e){
+      if($(this).find(".ink").length === 0){
+          $(this).prepend("<span class='ink'></span>");
+      }
+
+      ink = $(this).find(".ink");
+      ink.removeClass("animate");
+
+      if(!ink.height() && !ink.width()){
+          d = Math.max($(this).outerWidth(), $(this).outerHeight());
+          ink.css({height: d, width: d});
+      }
+
+      x = e.pageX - $(this).offset().left - ink.width()/2;
+      y = e.pageY - $(this).offset().top - ink.height()/2;
+
+      ink.css({top: y+'px', left: x+'px'}).addClass("animate");
+    });
+
+

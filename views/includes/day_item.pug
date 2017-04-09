@@ -10,6 +10,7 @@ mixin dayItem(day, user, i)
 
       style=`color: ${isActive && user.color}`
       id=`${!user && day.id}`
+      data-date=`${!user && day.date}`
     )
       .day-item-color-container(style=`display: ${!user && 'none'}`)
         .day-item-color(style=`background: ${isActive && user.color}`)

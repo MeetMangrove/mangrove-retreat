@@ -1,0 +1,18 @@
+.navbar {
+  padding: 15px;
+  position: relative;
+  z-index: 9;
+
+  &-menu {
+    float: right;
+    img {
+      height: 35px;
+      width: auto;
+      opacity: .9;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

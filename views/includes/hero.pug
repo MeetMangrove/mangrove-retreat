@@ -1,0 +1,33 @@
+.container
+  .hero
+    .hero-scene-wrapper
+      .hero-scene
+        each pictureUrl in house.pictures.slice(0, 2)
+          div(style=`background: linear-gradient(rgba(0,0,0, .25), rgba(0,0,0, .25)), url('${pictureUrl}')`)
+        .hero-popover.is-alpha
+          .hero-popover-inner
+            .hero-popover-item
+              .hero-popover-item-label Where
+              .hero-popover-item-value #{location.city}, #{location.country}
+            .hero-popover-item
+              .hero-popover-item-label When
+              .hero-popover-item-value #{_.head(_.head(weeks).days).month} #{_.head(_.head(weeks).days).number}th to #{_.last(_.last(weeks).days).month} #{_.last(_.last(weeks).days).number}th
+            .hero-popover-item
+              .hero-popover-item-label Participants
+              .hero-popover-item-users
+                each participant in participants
+                  div.day-item-user-avatar
+              .hero-popover-item-actions
+                a.hero-popover-item-action.ripplelink Join ##{channel}
+                a.hero-popover-item-action.ripplelink Learn more
+
+    .hero-title Mangrove is heading to <strong>#{location.country}</strong>
+    .hero-prices
+      .data-item
+        .data-item-header #{price.perNight}€
+        .data-item-footer per night
+      .data-item
+        .data-item-header.is-alpha  #{price.perWeek}€
+        .data-item-footer per week
+
+
