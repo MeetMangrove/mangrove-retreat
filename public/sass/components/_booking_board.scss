@@ -422,6 +422,38 @@ i.booking-board-row-lock {
   }
 
 
+  .booking-board-row {
+    .day-item-color { opacity: .25};
+
+    .day-item {
+      .day-item-number{
+        opacity: 1;
+        transform: translateY(0);
+
+      }
+
+      .day-item-name {
+        opacity: .5;
+        transform: translateY(0);
+      }
+    }
+
+    .day-item-user-avatar {
+      transform: translateX(-10px) scale(1.3);
+      opacity: 0;
+    }
+
+    .day-item-user-name {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .booking-board-row-user {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
 
   .booking-board-btns {
     display: block;
@@ -462,34 +494,36 @@ i.booking-board-row-lock {
 
 
 .booking-board-row.is-active {
-      .day-item-color { opacity: .25};
+  .day-item-color { opacity: .25};
 
-      .day-item {
-        .day-item-number{
-          opacity: 1;
-          transform: translateY(0);
+  .day-item {
+    .day-item-number{
+      opacity: 1;
+      transform: translateY(0);
 
-        }
-
-        .day-item-name {
-          opacity: .5;
-          transform: translateY(0);
-        }
-      }
-
-      .day-item-user-avatar {
-        transform: translateX(-10px) scale(1.3);
-        opacity: 0;
-      }
-
-      .day-item-user-name {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      .booking-board-row-user {
-        opacity: 1;
-        transform: translateX(0);
-      }
     }
+
+    .day-item-name {
+      opacity: .5;
+      transform: translateY(0);
+    }
+  }
+
+  .day-item-user-avatar {
+    transform: translateX(-10px) scale(1.3);
+    opacity: 0;
+  }
+
+  .day-item-user-name {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .booking-board-row-user {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
 
