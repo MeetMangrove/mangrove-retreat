@@ -5,6 +5,7 @@ block content
     each week, index in weeks
       .booking-board-line
   include includes/booking_board.pug
+  include includes/house_section
   input(id='retreat_organizer_username' type='hidden' value=organizer.username)
   script.
     $.ajax({

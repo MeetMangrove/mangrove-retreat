@@ -7,11 +7,16 @@ include day_item
         .booking-board-body
           .booking-board-headers
             each week, i in weeks
-              .booking-board-header
+              .booking-board-header(class=cx({'is-full': week.beds == 0}))
                 .booking-board-header-title Week #{i + 1}
                 .booking-board-header-subtitle
                   = `${_.head(week.days).month} ${_.head(week.days).number}th`
                   = ` to ${_.last(week.days).month} ${_.last(week.days).number}th`
+                .booking-board-header-beds
+                  if week.beds == 0
+                    span 'full'
+                  else
+                    span #{week.beds} beds available
           .booking-board-rows
             each user in participants
               .booking-board-row

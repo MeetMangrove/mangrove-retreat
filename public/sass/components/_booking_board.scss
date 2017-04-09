@@ -44,14 +44,37 @@
     padding: 15px 0;
     padding-bottom: 30px;
 
+    &.is-full {
+      opacity: .6;
+      .booking-board-header-beds {
+        span {
+          background: #ececec;
+          color: rgba(0, 0, 0, 0.43);
+          font-weight: 500;
+        }
+      }
+    }
+
     &-title {
       font-size: 23px;
       font-weight: 400;
     }
 
     &-subtitle {
-      padding-top: 7px;
+      padding: 7px 0px;
       opacity: .5;
+    }
+
+    &-beds {
+      span {
+        background: #333333;
+        color: white;
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20em;
+        font-weight: 300;
+        font-size: 14px;
+      }
     }
   }
 
@@ -275,6 +298,13 @@ i.booking-board-row-lock {
   position: relative;
   z-index: 4;
   user-select: none;
+
+  .data-item {
+    padding: 15px;
+        border-radius: 3px;
+        max-width: 100%;
+        margin: auto;
+  }
 
   &-title {
     background: white;

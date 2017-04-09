@@ -1,0 +1,41 @@
+.house-section-wrapper
+  .container
+    .house-section
+      .house-section-top
+        div #{temperature}°C
+        div #{localTime}
+      .house-section-bottom
+        .house-section-title Our house
+        .house-section-subtitle #{location.fullAddress}
+      .house-photos
+        each pictureUrl in house.pictures
+         div(style=`background: url('${pictureUrl}');background-size: cover; background-position: center center;`)
+  .container
+
+    include map
+    .house-section-datas
+      .data-item
+        .data-item-header #{weeks.length} weeks
+        .data-item-footer booked
+      .data-item
+        .data-item-header 👦€
+        .data-item-footer total price
+      .data-item
+        .data-item-header 👦€
+        .data-item-footer generated
+
+
+
+script.
+  $('.house-photos').slick({
+    dots: true,
+    infinite: true,
+    speed: 500,
+    fade: true,
+    cssEase: 'linear',
+    autoplay: true,
+    arrows: false,
+    dots: false,
+    autoplaySpeed: 3000
+  });
+
