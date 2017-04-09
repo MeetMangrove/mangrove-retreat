@@ -1,33 +1,166 @@
 extends layout
-
 block content
-	<a href="https://slack.com/oauth/authorize?scope=identity.basic,identity.email,identity.team,identity.avatar&client_id=24629294631.166278537604"><img alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" /></a>
-	h1 #{name}
-	p Slack channel: ##{channel}
-	p Organized by: #{organizer.name} (#{organizer.slack})
-	p #{description}
-	each pictureUrl in house.pictures
-		img(src=pictureUrl)
-	p #{location.fullAddress}
-	p #{location.city}, #{location.country}
-	p #{localTime}, #{temperature}°C
-	p Lat: #{location.latitude} Long: #{location.longitude}
-	p: a(href=house.url) The house
-	p House Rent Price: #{house.price}€
-	h1 Prices
-	p Per night: #{price.perNight}€
-	p Per week: #{price.perWeek}€ (Save #{price.weekDiscount}€)
-	h1 Weeks
-	ul
-		each week, index in weeks
-			li WEEK #{index + 1} : #{week.beds} beds available
-				ul
-					each day in week.days
-						li #{day.id} => #{day.name} #{day.number} #{day.month}
-	h1 Participants
-	ul
-		each participant in participants
-			li #{participant.name} #{participant.slack}
-				ul
-					each day in participant.days
-						li #{day.id} => #{day.name} #{day.number} #{day.month}
+  .booking-board-lines
+    each week, index in weeks
+      .booking-board-line
+  include includes/booking_board.pug
+  input(id='retreat_organizer_username' type='hidden' value=organizer.username)
+  script.
+    $.ajax({
+      url: 'https://tinyfac.es/api/users',
+      dataType: 'json',
+      success: function(data) {
+        for (var i = 0, len = data.length; i < len; i++) {
+          $('.day-item-user-avatar').eq(i).css({background: "url('" + data[i].avatars[0].url + "')"})
+          $('.booking-board-row-user').eq(i).css({background: "url('" + data[i].avatars[0].url + "')"})
+        }
+      }
+    });
+
+    var organiserUsername = $('#retreat_organizer_username').val()
+
+    $('.booking-board-row').on('click', function(){
+      $(this).toggleClass('is-active')
+    })
+
+    $('.booking-board-footer.step-1 .booking-board-btn').on('click', function(){
+      $(this).unbind('click')
+      $(this).on('click', function() {
+        if($(this).hasClass('can-book')) {
+          // 👦 modal stripe
+        } else {
+          // 👦 need le slack id du retreat organiser, dynamiquement (ci dessous @ben en brut: U1NK4E3QE)
+          window.open('slack://user?team=T0QJH8NJK&id=U1NK4E3QE')
+        }
+      })
+      var selectedDays = $(this).data('days').split(' ').slice(0, -1);
+      computePrice($(this), selectedDays)
+      var firstDaySelected = false
+      var lastDaySelected = false
+      $(this).addClass('is-active')
+      $(this).find('span').html('Pay $200')
+      $('.booking-board-footer').removeClass('step-1').addClass('step-2')
+      for (var i = 0, len = selectedDays.length; i < len; i++) {
+        $('#' + selectedDays[i]).addClass('is-active')
+      }
+
+      var divs = $('.booking-board-days-selector .day-item.is-active')
+      var index = 0;
+
+      var delay = setInterval( function(){
+        if ( index <= divs.length ){
+          $( divs[ index ] ).addClass( 'is-visible' );
+          index += 1;
+        }else{
+          clearInterval( delay );
+
+        }
+      }, i * 2);
+
+      $('.booking-board-days-selector .day-item').on('click', function() {
+        if (lastDaySelected) {
+          $('.booking-board-days-selector .day-item').removeClass('is-active')
+        }
+        if($('.booking-board-days-selector .day-item').hasClass('is-active')) {
+          var divs = []
+
+           if($('.booking-board-days-selector .day-item.is-active').attr('id') == $(this).attr('id')) return
+
+           selectedDays = [];
+           selectedDays.push($(this).attr('id'))
+           selectedDays.push($('.booking-board-days-selector .day-item.is-active').attr('id'))
+
+           if(isBefore($('.booking-board-days-selector .day-item.is-active'), $(this))) {
+            divs = $(this).prevUntil($('.booking-board-days-selector .day-item.is-active')).addClass('is-active is-visible')
+           } else {
+            divs = $(this).nextUntil($('.booking-board-days-selector .day-item.is-active')).addClass('is-active is-visible')
+           }
+           for (var i = 0, len = divs.length; i < len; i++) {
+             selectedDays.push(divs[i].getAttribute('id'))
+           }
+           selectedDays.reverse()
+           $(this).addClass('is-active  is-visible')
+           $('.booking-board-footer-title span').html('Great!')
+           $('.booking-board-footer-title i').html('')
+           lastDaySelected = true
+           firstDaySelected = false
+           computePrice($('.booking-board-btn.is-active'), selectedDays)
+        } else {
+          $(this).addClass('is-active is-visible')
+          firstDaySelected = true
+          lastDaySelected = false
+          $('.booking-board-footer-title span').html('Select your last day')
+          $('.booking-board-footer-title i').html('')
+        }
+
+      })
+
+      $('.booking-board-days-selector').on('mouseenter', function() {
+        if(!firstDaySelected) {
+          $('.booking-board-days-selector .day-item').removeClass('is-active')
+          $('.booking-board-footer-title span').html('Select your first day')
+          $('.booking-board-footer-title i').html('')
+        }
+      }).mouseleave(function(){
+        if(!firstDaySelected) {
+          lastDaySelected = false
+          $('.booking-board-footer-title span').html('Selected days')
+          $('.booking-board-footer-title i').html('(' + selectedDays.length + ')')
+
+          $('.booking-board-days-selector .day-item').removeClass('is-active')
+          for (var i = 0, len = selectedDays.length; i < len; i++) {
+            $('#' + selectedDays[i]).addClass('is-active is-visible')
+          }
+
+        }
+      })
+    })
+
+    function computePrice(that, selectedDays) {
+      that.addClass('is-loading')
+      $.post('computeprice',
+        { retreatId: 'recsNFkyMtlBf8RVg',
+          firstNight: selectedDays[0] + ` ${new Date().getFullYear()}`,
+          lastNight:  selectedDays[selectedDays.length - 1] + ` ${new Date().getFullYear()}`
+        }, function(data){
+          that.removeClass('is-loading')
+          var text
+          if(data.canBook) {
+            text = 'Pay ' + data.price + "€"
+            that.addClass('can-book')
+            that.removeClass('redirect-to-slack')
+          } else {
+            text = "DM " + organiserUsername + " (" + data.price + " €)"
+            that.removeClass('can-book')
+            that.addClass('redirect-to-slack')
+
+          }
+          that.find('span').text(text)
+
+      })
+    }
+
+    function isBefore(el1, el2) {
+      return el1.nextAll().filter(el2).length !== 0;
+    }
+
+    var touch = 'ontouchstart' in document.documentElement
+                || navigator.maxTouchPoints > 0
+                || navigator.msMaxTouchPoints > 0;
+
+    if (touch) { // remove all :hover stylesheets
+        try { // prevent exception on browsers not supporting DOM styleSheets properly
+            for (var si in document.styleSheets) {
+                var styleSheet = document.styleSheets[si];
+                if (!styleSheet.rules) continue;
+
+                for (var ri = styleSheet.rules.length - 1; ri >= 0; ri--) {
+                    if (!styleSheet.rules[ri].selectorText) continue;
+
+                    if (styleSheet.rules[ri].selectorText.match(':hover')) {
+                        styleSheet.deleteRule(ri);
+                    }
+                }
+            }
+        } catch (ex) {}
+    }

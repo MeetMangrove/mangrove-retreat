@@ -1,0 +1,42 @@
+include day_item
+
+.container
+  .booking-board-wrapper
+    .booking-board
+      .booking-board-body-wrapper
+        .booking-board-body
+          .booking-board-headers
+            each week, i in weeks
+              .booking-board-header
+                .booking-board-header-title Week #{i + 1}
+                .booking-board-header-subtitle
+                  = `${_.head(week.days).month} ${_.head(week.days).number}th`
+                  = ` to ${_.last(week.days).month} ${_.last(week.days).number}th`
+          .booking-board-rows
+            each user in participants
+              .booking-board-row
+                .booking-board-row-user
+                each week, i in weeks
+                  each day, i in week.days
+                    +dayItem(day, user, i)
+                i.booking-board-row-lock.mdi.mdi-lock-outline
+
+      .booking-board-footer.step-1
+        .booking-board-footer-title
+          span Selected days
+          i (8)
+        .booking-board-days-selector-wrapper
+          .booking-board-days-selector
+            each week in weeks
+              each day, i in week.days
+                +dayItem(day)
+        .booking-board-btns
+          each week, i in weeks
+            - days = ""
+            - week.days.map(function(day){ days += `${day.id} `})
+            .booking-board-btn(data-days=`${days}`)
+              include slack_logo.pug
+              span Book week #{i + 1}
+              i.mdi.mdi-chevron-right
+              .loading-pulse
+

@@ -1,0 +1,26 @@
+mixin dayItem(day, user, i)
+  - isActive = user && !_.isEmpty(_.filter(user.days, function(d) { return d.id == day.id }))
+  if !day.hidden
+    .day-item(
+      class=cx({
+              'is-active': isActive,
+              'is-last': user && _.last(user.days).id == day.id,
+              'is-first': user && _.first(user.days).id == day.id
+            })
+
+      style=`color: ${isActive && user.color}`
+      id=`${!user && day.id}`
+    )
+      .day-item-color-container(style=`display: ${!user && 'none'}`)
+        .day-item-color(style=`background: ${isActive && user.color}`)
+      .day-item-name
+        = day.name
+      .day-item-number
+        = day.number
+      if typeof user !== 'undefined'
+        if isActive && _.head(user.days).id == day.id
+          .day-item-user
+            .day-item-user-avatar
+
+            .day-item-user-name
+              = user.username

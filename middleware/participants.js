@@ -101,7 +101,9 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
 						id: formattedParticipant.id,
 						days: formattedParticipant.days,
 						name: detailedParticipant.get('Name'),
-						slack: detailedParticipant.get('Slack Handle')
+						username: detailedParticipant.get('Slack Handle'),
+            color: 'black', // 👦 slack color
+            avatar_url: 'TODO' // 👦 slack avatar
 					})
 					break
 				}
