@@ -1,0 +1,19 @@
+.data-item {
+  text-align: center;
+  margin: 0 15px;
+
+  &-header {
+    font-size: 18px;
+    margin-bottom: 5px;
+
+    &.is-alpha {
+      color: black;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+  }
+
+  &-footer {
+    opacity: .5;
+  }
+}

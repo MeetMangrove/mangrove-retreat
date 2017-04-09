@@ -23,8 +23,9 @@ include day_item
 
       .booking-board-footer.step-1
         .booking-board-footer-title
-          span Selected days
-          i (8)
+          .data-item
+            .data-item-header #{price.perWeek}€
+            .data-item-footer 7 nights
         .booking-board-days-selector-wrapper
           .booking-board-days-selector
             each week in weeks
