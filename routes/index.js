@@ -5,15 +5,19 @@ var bedsCounter = require('../helpers/bedsCounter.js')
 
 var participants = require('../middleware/participants.js')
 var retreat = require('../middleware/retreat.js')
+var faq = require('../middleware/faq.js')
 var price = require('../middleware/price.js')
 var auth = require('../middleware/auth.js')
 
 router.get('/', function(req, res, next) {
 	retreat.get().then(function (formattedRetreat) {
 		participants.get(formattedRetreat.id).then(function (formattedParticipants) {
-			var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
-			result.participants = formattedParticipants
-			res.render('index', result)
+			faq.get(formattedRetreat.id).then(function (faq) {
+				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+				result.participants = formattedParticipants
+				result.faq = faq
+				res.render('index', result)
+			})
 		})
 	}, function (error) { next(error) })
 })
