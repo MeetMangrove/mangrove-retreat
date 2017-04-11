@@ -107,6 +107,16 @@
   width: 100%;
   border-radius: 3px;
   -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+
+  a {
+    display: none !important;
+  }
+  .gmnoprint:not(.gm-bundled-control) {
+    display: none;
+  }
+  .gm-bundled-control .gmnoprint {
+    display: block;
+  }
 }
 
 .house-section-datas {
@@ -120,4 +130,3 @@
     max-width: 100%;
   }
 }
-
