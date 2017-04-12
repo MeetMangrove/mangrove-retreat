@@ -8,7 +8,7 @@ function getTemperatureAndLocalTime(latitude, longitude) {
 		request.get(url, function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				resolve({
-					temperature: JSON.parse(body).currently.temperature,
+					temperature: JSON.parse(body).currently.temperature.toFixed(1),
 					localTime: moment().tz(JSON.parse(body).timezone).format('HH:mm')
 				})
 			} else {
