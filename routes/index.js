@@ -1,13 +1,15 @@
-var express = require('express');
-var router = express.Router()
+const express = require('express');
+const router = express.Router()
+const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY ? process.env.STRIPE_PUBLISHABLE_KEY : 'pk_test_BFpNYeuEnZ50FMwhi59JZs2c'
 
-var bedsCounter = require('../helpers/bedsCounter.js')
+const bedsCounter = require('../helpers/bedsCounter.js')
 
-var participants = require('../middleware/participants.js')
-var retreat = require('../middleware/retreat.js')
-var faq = require('../middleware/faq.js')
-var price = require('../middleware/price.js')
-var auth = require('../middleware/auth.js')
+const participants = require('../middleware/participants.js')
+const retreat = require('../middleware/retreat.js')
+const faq = require('../middleware/faq.js')
+const price = require('../middleware/price.js')
+const auth = require('../middleware/auth.js')
+const charge = require('../middleware/charge.js')
 
 router.get('/', function(req, res, next) {
 	retreat.get().then(function (formattedRetreat) {
@@ -16,6 +18,7 @@ router.get('/', function(req, res, next) {
 				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
 				result.participants = formattedParticipants
 				result.faq = faq
+				result.stripePublishableKey = stripePublishableKey
 				res.render('index', result)
 			})
 		})
@@ -34,6 +37,22 @@ router.post('/computeprice', function(req, res, next) {
 	price.compute(req.body).then(function (result) {
 		res.send(result)
 	}, function (err) { next(err) })
+})
+
+router.post('/charge', function(req, res, next) {
+	charge.charge(req.body).then(function () {
+		res.send({
+			success: true
+		})
+	}, function (error) { next(error)	})
+})
+
+router.get('/booked', function(req, res, next) {
+	res.render('booked', {})
+})
+
+router.get('/booking_error', function(req, res, next) {
+	res.render('booking_error', {})
 })
 
 module.exports = router;

@@ -68,7 +68,8 @@ function compute(params) {
 			return {
 				price: retreat.get('Price Per Week') * weeksCount,
 				discount: retreat.get('Week Discount') * weeksCount,
-				canBook: true
+				canBook: true,
+				description: getDescription(weeksCount)
 			}
 
 			function getWeeksCount() {
@@ -89,6 +90,15 @@ function compute(params) {
 
 				return (1 + lastNightWeekIndex - firstNightWeekIndex)
 			}
+
+			function getDescription(weeksCount) {
+				var description = 'Booking ' + weeksCount + ' week'
+				if (weeksCount > 1) {
+					description += 's'
+				}
+				description += ' for ' + retreat.get('Name')
+				return description
+			}
 		}
 
 		function getPricesForCustomStay() {
@@ -99,7 +109,8 @@ function compute(params) {
 			return {
 				price: pricePerNight * numberOfDays,
 				discount: 0,
-				canBook: false
+				canBook: false,
+				description: ''
 			}
 		}
 	})

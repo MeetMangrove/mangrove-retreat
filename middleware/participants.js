@@ -8,7 +8,7 @@ function getParticipants(retreatId) {
 		var participants = []
 
 		airtable.participants.select({
-			filterByFormula:  "{Retreat Id} = '" + retreatId + "'"
+			filterByFormula: "{Retreat Id} = '" + retreatId + "'"
 		}).eachPage(function page(records, fetchNextPage) {
 			records.forEach(function(record) {
 				participants.push(record)
@@ -97,13 +97,16 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
 			for (var j = 0; j < formattedParticipants.length; j++) {
 				var formattedParticipant = formattedParticipants[j]
 				if (formattedParticipant.id === detailedParticipant.id) {
+					const tw = detailedParticipant.get('Twitter') && detailedParticipant.get('Twitter').length ? detailedParticipant.get('Twitter') : null
+					const img = tw ? 'https://twitter.com/' + tw + '/profile_image?size=original' : null
+
 					combinedParticipants.push({
 						id: formattedParticipant.id,
 						days: formattedParticipant.days,
 						name: detailedParticipant.get('Name'),
 						username: detailedParticipant.get('Slack Handle'),
-            color: 'black', // 👦 slack color
-            avatar_url: 'TODO' // 👦 slack avatar
+						color: 'black', // 👦 slack color
+						avatar_url: img // 👦 slack avatar
 					})
 					break
 				}
@@ -114,6 +117,40 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
 	}
 }
 
+function addParticipant(id, retreatId, firstNight, lastNight) {
+	return new Promise(function (resolve, reject) {
+		airtable.participants.create({
+			Participant: [id],
+			Retreat: [retreatId],
+			'First Night': firstNight,
+			'Last Night': lastNight
+		}, function(err, record) {
+			if (err) { reject(err); return; }
+			console.log(record.getId());
+			resolve()
+		})
+	})
+}
+
+function getParticipantWithEmail(email) {
+	return new Promise(function (resolve, reject) {
+		airtable.members.select({
+			filterByFormula: "{Email} = '" + email + "'"
+		}).firstPage(function(err, records) {
+			console.log(err)
+			console.log(records)
+			if (err) { reject(err); return }
+			if (typeof records[0] !== 'undefined') {
+				resolve(records[0])
+			} else {
+				reject('No members found matching email : ' + email)
+			}
+		})
+	})
+}
+
 module.exports = {
-	get: getFormattedParticipantsIncludingDetails
+	get: getFormattedParticipantsIncludingDetails,
+	add: addParticipant,
+	getParticipantWithEmail: getParticipantWithEmail
 }
