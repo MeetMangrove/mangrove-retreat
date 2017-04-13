@@ -1,0 +1,11 @@
+.container
+  .title
+    = 'Frequently Asked Stuff'
+  .faq-items
+    each faq_item in faq
+      .faq-item-container
+        .faq-item-icon
+          = '?'
+        .faq-item
+          .faq-item-title #{faq_item.question}
+          .faq-item-answer #{faq_item.answer}
