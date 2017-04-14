@@ -1,6 +1,7 @@
-const request = require('request');
+const request = require('request')
 const clientId = '24629294631.166278537604'
 const clientSecret = '7fedc702b17499b262d1bab10d1fa7ad'
+const airtable = require('../helpers/airtable.js')
 
 function checkCode(code) {
 	return new Promise(function (resolve, reject) {
@@ -26,6 +27,36 @@ function getUserInfo(token, userId) {
 		})
 	})
 }
+
+function getCurrentUserDetail(username) {
+	return new Promise(function (resolve, reject) {
+		airtable.members.select({
+			filterByFormula: "{Slack Handle} = '@" + username + "'"
+		}).firstPage(function(err, records) {
+			if (err) { reject(err); return }
+			if (typeof records[0] !== 'undefined') {
+				resolve(formatCurrentUser(records[0]))
+			} else {
+				reject('No members found matching username : ' + username)
+			}
+		})
+	})
+
+	function formatCurrentUser(currentUser) {
+		const tw = currentUser.get('Twitter') && currentUser.get('Twitter').length ? currentUser.get('Twitter') : null
+		const img = tw ? 'https://twitter.com/' + tw + '/profile_image?size=original' : null
+
+		return {
+			id: currentUser.id,
+			name: currentUser.get('Name'),
+			username: currentUser.get('Slack Handle'),
+			color: 'black',
+			avatar_url: img
+		}
+	}
+}
+
 module.exports = {
-	checkCode: checkCode
+	checkCode: checkCode,
+	getCurrentUserDetail: getCurrentUserDetail
 }

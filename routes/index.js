@@ -18,8 +18,16 @@ router.get('/', function(req, res, next) {
 				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
 				result.participants = formattedParticipants
 				result.faq = faq
-				result.stripePublishableKey = stripePublishableKey
-				res.render('index', result)
+				if (typeof req.query.currentUser !== 'undefined') {
+					result.stripePublishableKey = stripePublishableKey
+					auth.getCurrentUserDetail(req.query.currentUser).then(function (currentUser) {
+						result.currentUser = currentUser
+						console.log(result)
+						res.render('index', result)
+					})
+				} else {
+					res.render('index', result)
+				}
 			})
 		})
 	}, function (error) { next(error) })

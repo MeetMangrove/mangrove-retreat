@@ -106,7 +106,7 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
 						name: detailedParticipant.get('Name'),
 						username: detailedParticipant.get('Slack Handle'),
 						color: 'black', // 👦 slack color
-						avatar_url: img // 👦 slack avatar
+						avatar_url: img
 					})
 					break
 				}
@@ -126,7 +126,6 @@ function addParticipant(id, retreatId, firstNight, lastNight) {
 			'Last Night': lastNight
 		}, function(err, record) {
 			if (err) { reject(err); return; }
-			console.log(record.getId());
 			resolve()
 		})
 	})
@@ -137,8 +136,6 @@ function getParticipantWithEmail(email) {
 		airtable.members.select({
 			filterByFormula: "{Email} = '" + email + "'"
 		}).firstPage(function(err, records) {
-			console.log(err)
-			console.log(records)
 			if (err) { reject(err); return }
 			if (typeof records[0] !== 'undefined') {
 				resolve(records[0])
