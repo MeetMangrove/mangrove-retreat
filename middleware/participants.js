@@ -91,21 +91,22 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
 
 	function getCombinedParticipants(formattedParticipants, detailedParticipants) {
 		var combinedParticipants = []
+		const colors = getColors(detailedParticipants.length)
 
 		for (var i = 0; i < detailedParticipants.length; i++) {
 			var detailedParticipant = detailedParticipants[i]
 			for (var j = 0; j < formattedParticipants.length; j++) {
 				var formattedParticipant = formattedParticipants[j]
 				if (formattedParticipant.id === detailedParticipant.id) {
-					const tw = detailedParticipant.get('Twitter') && detailedParticipant.get('Twitter').length ? detailedParticipant.get('Twitter') : null
-					const img = tw ? 'https://twitter.com/' + tw + '/profile_image?size=original' : null
+					var tw = detailedParticipant.get('Twitter') && detailedParticipant.get('Twitter').length ? detailedParticipant.get('Twitter') : null
+					var img = tw ? 'https://twitter.com/' + tw + '/profile_image?size=original' : null
 
 					combinedParticipants.push({
 						id: formattedParticipant.id,
 						days: formattedParticipant.days,
 						name: detailedParticipant.get('Name'),
 						username: detailedParticipant.get('Slack Handle'),
-						color: 'black', // 👦 slack color
+						color: colors[i],
 						avatar_url: img
 					})
 					break
@@ -114,6 +115,37 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
 		}
 
 		return combinedParticipants
+
+		function getColors(size) {
+			const colors = ['#FF7900', '#FF00FF', '#7F00FF', '#0075FF', '#00CBFF', '#FF9800', '#FF00A1',
+			'#7B00FF', '#006BFF', '#0096FF', '#FFBB00']
+			const indexes = getShuffledIndexesOfSize(size)
+			var randomColors = []
+
+			for (var i = 0; i < indexes.length; i++) {
+				var index = indexes[i]
+				randomColors.push(colors[index % colors.length])
+			}
+
+			return randomColors
+
+			function getShuffledIndexesOfSize(size) {
+				var indexes = Array.apply(null, {length: size}).map(Number.call, Number)
+				shuffle(indexes)
+				return indexes
+
+				function shuffle(array) {
+					var m = array.length, t, i
+					while (m) {
+						i = Math.floor(Math.random() * m--);
+						t = array[m];
+						array[m] = array[i];
+						array[i] = t;
+					}
+					return array;
+				}
+			}
+		}
 	}
 }
 
