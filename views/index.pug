@@ -11,7 +11,7 @@ block content
   script(src="https://checkout.stripe.com/checkout.js")
   script.
     var config = {
-      stripePublishableKey: !{JSON.stringify(stripePublishableKey)},
+      stripePublishableKey: 'test',
       retreatId: !{JSON.stringify(id)},
     }
   script(src="/javascripts/stripe.js")

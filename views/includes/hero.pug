@@ -16,10 +16,10 @@
               .hero-popover-item-label Participants
               .hero-popover-item-users
                 each participant in participants
-                  div.day-item-user-avatar
+                  div.day-item-user-avatar(style=`background: url('${participant.avatar_url}')`)
               .hero-popover-item-actions
                 a.hero-popover-item-action.ripplelink Join ##{channel}
-                a.hero-popover-item-action.ripplelink Learn more
+                a.hero-popover-item-action.ripplelink(href='#house') Learn more
 
     .hero-title Mangrove is heading to <strong>#{location.country}</strong>
     .hero-prices

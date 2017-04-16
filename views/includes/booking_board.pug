@@ -20,29 +20,29 @@ include day_item
           .booking-board-rows
             each user in participants
               .booking-board-row
-                .booking-board-row-user
+                .booking-board-row-user(style=`background: url('${user.avatar_url}')`)
                 each week, i in weeks
                   each day, i in week.days
                     +dayItem(day, user, i)
                 i.booking-board-row-lock.mdi.mdi-lock-outline
-
-      .booking-board-footer.step-1
-        .booking-board-footer-title
-          .data-item
-            .data-item-header #{price.perWeek}€
-            .data-item-footer 7 nights
-        .booking-board-days-selector-wrapper
-          .booking-board-days-selector
-            each week in weeks
-              each day, i in week.days
-                +dayItem(day)
-        .booking-board-btns
-          each week, i in weeks
-            - days = ""
-            - week.days.map(function(day){ days += `${day.id} `})
-            .booking-board-btn(data-days=`${days}`)
-              include slack_logo.pug
-              span Book week #{i + 1}
-              i.mdi.mdi-chevron-right
-              .loading-pulse
+      if currentUser
+        .booking-board-footer.step-1
+          .booking-board-footer-title
+            .data-item
+              .data-item-header #{price.perWeek}€
+              .data-item-footer 7 nights
+          .booking-board-days-selector-wrapper
+            .booking-board-days-selector
+              each week in weeks
+                each day, i in week.days
+                  +dayItem(day)
+          .booking-board-btns
+            each week, i in weeks
+              - days = ""
+              - week.days.map(function(day){ days += `${day.id} `})
+              .booking-board-btn(data-days=`${days}`)
+                include slack_logo.pug
+                span Book week #{i + 1}
+                i.mdi.mdi-chevron-right
+                .loading-pulse
 

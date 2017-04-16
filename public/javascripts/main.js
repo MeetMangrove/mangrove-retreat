@@ -1,13 +1,11 @@
-$.ajax({
-	url: 'https://tinyfac.es/api/users',
-	dataType: 'json',
-	success: function(data) {
-		for (var i = 0, len = data.length; i < len; i++) {
-			$('.day-item-user-avatar').eq(i).css({background: "url('" + data[i].avatars[0].url + "')"})
-			$('.booking-board-row-user').eq(i).css({background: "url('" + data[i].avatars[0].url + "')"})
-		}
-	}
-});
+$('.user-avatar').on('click', function(e) {
+  $('.navbar-dropdown-menu').toggleClass('is-active')
+  e.stopPropagation();
+})
+
+$('body').on('click', function() {
+  $('.navbar-dropdown-menu').removeClass('is-active')
+})
 
 var organiserUsername = $('#retreat_organizer_username').val()
 var stripeParams = {

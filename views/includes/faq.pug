@@ -1,4 +1,6 @@
 .container
+  .url-helper#faq
+
   .title
     = 'Frequently Asked Stuff'
   .faq-items
@@ -8,5 +10,5 @@
           = '?'
         .faq-item
           .faq-item-title #{faq_item.question}
-          .faq-item-answer 
+          .faq-item-answer
             != faq_item.answer

@@ -2,6 +2,15 @@
   display: flex;
   flex-wrap: wrap;
 
+  a {
+    color: #1f81fa;
+    text-decoration: none;
+
+    &:hover {
+      color: darken(#1f81fa, 10%);
+    }
+  }
+
   & > div {
     flex: 0 0 50%;
 

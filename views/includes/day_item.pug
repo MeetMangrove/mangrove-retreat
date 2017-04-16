@@ -21,7 +21,6 @@ mixin dayItem(day, user, i)
       if typeof user !== 'undefined'
         if isActive && _.head(user.days).id == day.id
           .day-item-user
-            .day-item-user-avatar
-
+            .day-item-user-avatar(style=`background: url('${user.avatar_url}')`)
             .day-item-user-name
               = user.username
