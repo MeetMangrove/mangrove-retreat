@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router()
 const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY ? process.env.STRIPE_PUBLISHABLE_KEY : 'pk_test_BFpNYeuEnZ50FMwhi59JZs2c'
-
+const slackRedirectUri = process.env.SLACK_REDIRECT_URI ? process.env.SLACK_REDIRECT_URI : 'http://localhost:3000/auth'
 const bedsCounter = require('../helpers/bedsCounter.js')
 
 const participants = require('../middleware/participants.js')
@@ -18,11 +18,11 @@ router.get('/', function(req, res, next) {
 				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
 				result.participants = formattedParticipants
 				result.faq = faq
+				result.slackRedirectUri = slackRedirectUri
 				if (typeof req.query.currentUser !== 'undefined') {
 					result.stripePublishableKey = stripePublishableKey
 					auth.getCurrentUserDetail(req.query.currentUser).then(function (currentUser) {
 						result.currentUser = currentUser
-						console.log(result)
 						res.render('index', result)
 					})
 				} else {

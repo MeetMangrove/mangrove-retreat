@@ -9,9 +9,9 @@ function openStripeCheckout(stripeParams, tokenCallback) {
 	// Open Checkout with further options:
 	handler.open({
 		name: 'Mangrove',
-		description: stripeParams.description, // 👳🏻 Put correct description here (9 nights in Bali)
+		description: stripeParams.description,
 		currency: 'eur',
-		amount: stripeParams.amount * 100 // 👳🏻 Put correct amount here
+		amount: stripeParams.amount * 100
 	})
 }
 
