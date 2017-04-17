@@ -19,8 +19,8 @@ router.get('/', function(req, res, next) {
 				result.participants = formattedParticipants
 				result.faq = faq
 				result.slackRedirectUri = slackRedirectUri
+				result.stripePublishableKey = stripePublishableKey
 				if (typeof req.query.currentUser !== 'undefined') {
-					result.stripePublishableKey = stripePublishableKey
 					auth.getCurrentUserDetail(req.query.currentUser).then(function (currentUser) {
 						result.currentUser = currentUser
 						res.render('index', result)
