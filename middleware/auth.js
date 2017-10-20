@@ -1,8 +1,9 @@
 const request = require('request')
-const clientId = '24629294631.166278537604'
-const clientSecret = '7fedc702b17499b262d1bab10d1fa7ad'
-const slackRedirectUri = process.env.SLACK_REDIRECT_URI ? process.env.SLACK_REDIRECT_URI : 'http://localhost:3000/auth'
+const clientId = process.env.SLACK_CLIENT_ID
+const clientSecret = process.env.SLACK_CLIENT_SECRET
+const slackRedirectUri = process.env.SLACK_REDIRECT_URI
 const airtable = require('../helpers/airtable.js')
+
 
 function checkCode(code) {
 	return new Promise(function (resolve, reject) {
@@ -10,8 +11,9 @@ function checkCode(code) {
 		+ '&client_secret=' + clientSecret + '&redirect_uri=' + slackRedirectUri,
 			function (error, response, body) {
 				if (!error && response.statusCode == 200) {
-					const b = JSON.parse(body)
-					getUserInfo(b.access_token, b.user.id).then(function (username) {
+					body = JSON.parse(body)
+					if (body.error) return reject(body.error)
+					getUserInfo(body.access_token, body.user.id).then(function (username) {
 						resolve(username)
 					})
 				} else { reject(error) }
@@ -24,7 +26,9 @@ function getUserInfo(token, userId) {
 		request.get('https://slack.com/api/users.info?token=' + token + '&user=' + userId,
 		function (error, response, body) {
 			if (!error && response.statusCode == 200) {
-				resolve(JSON.parse(body).user.name)
+				body = JSON.parse(body)
+				if (body.error) return reject(body.error)
+				resolve(body.user.name)
 			} else { reject(error) }
 		})
 	})
