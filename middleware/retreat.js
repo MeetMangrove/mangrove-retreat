@@ -8,24 +8,20 @@ function getRetreat() {
 			maxRecords: 1,
 			filterByFormula: "IS_BEFORE(NOW(), {Last Night})",
 		}).firstPage(function(err, records) {
-			if (err) {
-				reject(err)
-				return
-			}
-
-			if (typeof records[0] !== 'undefined') {
-				const retreat = records[0]
-				getOrganizer(retreat).then(function (organizer) {
-					var formattedRetreat = formatRetreat(retreat)
-					formattedRetreat.organizer = organizer
-					weather.getTemperatureAndLocalTime(retreat.get('Latitude'), retreat.get('Longitude')).then(
-						function (result) {
-							formattedRetreat.localTime = result.localTime
-							formattedRetreat.temperature = result.temperature
-							resolve(formattedRetreat)
-					})
+			if (err) return reject(err)
+			// TODO: properly handle when no ongoing retreat in Airtable
+			if (!records.length) return reject("found no ongoing retreats on Airtable")
+			const retreat = records[0]
+			getOrganizer(retreat).then(function (organizer) {
+				var formattedRetreat = formatRetreat(retreat)
+				formattedRetreat.organizer = organizer
+				weather.getTemperatureAndLocalTime(retreat.get('Latitude'), retreat.get('Longitude')).then(
+					function (result) {
+						formattedRetreat.localTime = result.localTime
+						formattedRetreat.temperature = result.temperature
+						resolve(formattedRetreat)
 				})
-			}
+			})
 		})
 	})
 
