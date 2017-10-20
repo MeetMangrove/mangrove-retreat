@@ -21,9 +21,10 @@ router.get('/', function(req, res, next) {
 				result.faq = faq
 				result.slackRedirectUri = slackRedirectUri
 				result.slackClientId = slackClientId
-				if (typeof req.query.currentUser !== 'undefined') {
+				if (req.session.currentUser && req.session.currentUser.slackName) {
 					result.stripePublishableKey = stripePublishableKey
-					auth.getCurrentUserDetail(req.query.currentUser).then(function (currentUser) {
+					auth.getCurrentUserDetail(req.session.currentUser.slackName)
+					.then(function (currentUser) {
 						result.currentUser = currentUser
 						res.render('index', result)
 					})
@@ -37,10 +38,17 @@ router.get('/', function(req, res, next) {
 
 router.get('/auth', function(req, res, next) {
 	auth.checkCode(req.query.code).then(function (currentUser) {
-		res.redirect('/?currentUser=' + currentUser)
+		// save the Slack username to the session cookie
+		req.session.currentUser = {slackName: currentUser}
+		res.redirect('/')
 	}, function (error) {
 		next(error)
 	})
+})
+
+router.get('/logout', function(req, res, next) {
+	req.session.currentUser = null
+	res.redirect('/')
 })
 
 router.post('/computeprice', function(req, res, next) {

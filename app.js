@@ -1,9 +1,11 @@
 require('dotenv').config()
+var _ = require('lodash')
 var express = require('express')
 var path = require('path')
 var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 var bodyParser = require('body-parser')
 var sassMiddleware = require('node-sass-middleware')
 var postcssMiddleware = require('postcss-middleware');
@@ -13,12 +15,19 @@ var index = require('./routes/index')
 
 var app = express()
 
+// session cookies
+app.use(cookieSession({
+	name: 'mangrove-retreat-session',
+  keys: _.filter([process.env.SECRET_KEY, 'M@ngR0ve']),
+  maxAge: 30 * 24 * 3600 * 1000 // 30 days
+}))
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // locals
-app.locals._  = require("lodash");
+app.locals._  = _;
 app.locals.cx = require('classnames');
 
 // uncomment after placing your favicon in /public
