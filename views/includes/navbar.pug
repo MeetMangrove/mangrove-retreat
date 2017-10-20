@@ -9,7 +9,7 @@
   else
     .navbar-menu
 
-      a(href="https://slack.com/oauth/authorize?scope=identity.basic,identity.email,identity.team,identity.avatar&client_id=24629294631.166278537604&redirect_uri=" + slackRedirectUri)
+      a(href="https://slack.com/oauth/authorize?scope=identity.basic,identity.email,identity.team,identity.avatar&client_id=" + slackClientId + "&redirect_uri=" + slackRedirectUri)
         img(alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x")
   .navbar-dropdown-menu
     a.user-dropdown-item(href='/') Logout
