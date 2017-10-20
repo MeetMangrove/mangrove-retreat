@@ -56,12 +56,17 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
 	// set locals, only providing error in development
-	res.locals.message = err.message
-	res.locals.error = req.app.get('env') === 'development' ? err : {}
+	const isDev = req.app.get('env') === 'development'
 
 	// render the error page
 	res.status(err.status || 500)
-	res.render('error')
+	res.render('error', {error: isDev ? err : null})
+})
+
+// proper logging of UnhandledPromiseRejection
+process.on('unhandledRejection', function(reason, p) {
+	console.log("Possibly Unhandled Rejection at: Promise ",
+		p, " reason: ", reason, reason.message)
 })
 
 module.exports = app
