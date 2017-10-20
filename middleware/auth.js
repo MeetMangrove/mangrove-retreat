@@ -13,7 +13,7 @@ function checkCode(code) {
 				if (!error && response.statusCode == 200) {
 					body = JSON.parse(body)
 					if (body.error) return reject(body.error)
-					getUserInfo(body.access_token, body.user.id).then(function (username) {
+					getUserInfo(body.access_token, body.user_id).then(function (username) {
 						resolve(username)
 					})
 				} else { reject(error) }
