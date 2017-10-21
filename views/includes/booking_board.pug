@@ -25,7 +25,7 @@ include day_item
                   each day, i in week.days
                     +dayItem(day, user, i)
                 i.booking-board-row-lock.mdi.mdi-lock-outline
-      if currentUser
+      if session.currentUser
         .booking-board-footer.step-1
           .booking-board-footer-title
             .data-item
@@ -45,4 +45,3 @@ include day_item
                 span Book week #{i + 1}
                 i.mdi.mdi-chevron-right
                 .loading-pulse
-

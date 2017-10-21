@@ -22,6 +22,12 @@ app.use(cookieSession({
   maxAge: 30 * 24 * 3600 * 1000 // 30 days
 }))
 
+// expose session to templates, accessible as `session` via `res.locals`
+app.use(function (req, res, next) {
+  res.locals.session = req.session
+  next()
+})
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

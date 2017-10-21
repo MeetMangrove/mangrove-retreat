@@ -1,4 +1,5 @@
-const express = require('express');
+const _ = require('lodash')
+const express = require('express')
 const router = express.Router()
 const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY ? process.env.STRIPE_PUBLISHABLE_KEY : 'pk_test_BFpNYeuEnZ50FMwhi59JZs2c'
 const slackRedirectUri = process.env.SLACK_REDIRECT_URI
@@ -17,29 +18,28 @@ router.get('/', function(req, res, next) {
 		participants.get(formattedRetreat.id).then(function (formattedParticipants) {
 			faq.get(formattedRetreat.id).then(function (faq) {
 				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
-				result.participants = formattedParticipants
-				result.faq = faq
-				result.slackRedirectUri = slackRedirectUri
-				result.slackClientId = slackClientId
-				if (req.session.currentUser && req.session.currentUser.slackName) {
-					result.stripePublishableKey = stripePublishableKey
-					auth.getCurrentUserDetail(req.session.currentUser.slackName)
-					.then(function (currentUser) {
-						result.currentUser = currentUser
-						res.render('index', result)
-					})
-				} else {
-					res.render('index', result)
-				}
+				res.render('index', _.merge(result, {
+					participants: formattedParticipants,
+					faq: faq,
+					slackRedirectUri: slackRedirectUri,
+					slackClientId: slackClientId,
+					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null)
+				}))
 			})
 		})
 	}, function (error) { next(error) })
 })
 
 router.get('/auth', function(req, res, next) {
-	auth.checkCode(req.query.code).then(function (currentUser) {
-		// save the Slack username to the session cookie
-		req.session.currentUser = {slackName: currentUser}
+	auth.checkCode(req.query.code)
+	.then(function (slackName) {
+		// fetch user details
+		return auth.getCurrentUserDetail(slackName)
+	})
+	.then(function(currentUserDetails) {
+		// save user details into session
+		req.session.currentUser = currentUserDetails
+		// redirect to home
 		res.redirect('/')
 	}, function (error) {
 		next(error)
@@ -59,11 +59,11 @@ router.post('/computeprice', function(req, res, next) {
 
 router.post('/charge', function(req, res, next) {
 	const currentUser = req.session.currentUser
-	if (!currentUser || !currentUser.slackName) return res.send({
+	if (!currentUser) return res.send({
 		success: false,
 		error: "You need to sign in to perform this action"
 	})
-	charge.charge(currentUser.slackName, req.body).then(function () {
+	charge.charge(currentUser.username, req.body).then(function () {
 		res.send({
 			success: true
 		})

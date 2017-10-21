@@ -1,15 +1,14 @@
 .navbar
   a(href='/')
     include brand_logo
-  if currentUser
+  if session.currentUser
     .navbar-menu
       a.navbar-menu-item(href='#faq') FAQ
       a.place(href='#house') THE HOUSE
-      a.user-avatar(style=`background: url('${currentUser.avatar_url}')`)
+      a.user-avatar(style=`background: url('${session.currentUser.avatar_url}')`)
+    .navbar-dropdown-menu
+      a.user-dropdown-item(href='/logout') Logout
   else
     .navbar-menu
-
       a(href="https://slack.com/oauth/authorize?scope=users:read&client_id=" + slackClientId + "&redirect_uri=" + slackRedirectUri)
         img(alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x")
-  .navbar-dropdown-menu
-    a.user-dropdown-item(href='/') Logout
