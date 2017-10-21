@@ -26,7 +26,7 @@ function postStripeTokenAndInfos(token, retreatId, firstNight, lastNight) {
 		if (data.success) {
 			window.location = '/booked'
 		} else {
-			window.location = '/booking_error?error=' + data
+			window.location = '/booking_error?error=' + data.error
 		}
 	})
 }

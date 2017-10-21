@@ -62,7 +62,12 @@ router.post('/charge', function(req, res, next) {
 		res.send({
 			success: true
 		})
-	}, function (error) { next(error)	})
+	}, function (error) {
+		res.send({
+			success: false,
+			error: error
+		})
+	})
 })
 
 router.get('/booked', function(req, res, next) {
