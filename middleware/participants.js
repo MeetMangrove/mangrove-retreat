@@ -163,17 +163,14 @@ function addParticipant(id, retreatId, firstNight, lastNight) {
 	})
 }
 
-function getParticipantWithEmail(email) {
+function getParticipantBySlackName(slackName) {
 	return new Promise(function (resolve, reject) {
 		airtable.members.select({
-			filterByFormula: "{Email} = '" + email + "'"
+			filterByFormula: "{Slack Handle} = '" + slackName.replace(/^@?/, '@') + "'"
 		}).firstPage(function(err, records) {
-			if (err) { reject(err); return }
-			if (typeof records[0] !== 'undefined') {
-				resolve(records[0])
-			} else {
-				reject('No members found matching email : ' + email)
-			}
+			if (err) return reject(err)
+			if (!records.length) return reject('No members found matching Slack handle : ' + slackName)
+			resolve(records[0])
 		})
 	})
 }
@@ -181,5 +178,5 @@ function getParticipantWithEmail(email) {
 module.exports = {
 	get: getFormattedParticipantsIncludingDetails,
 	add: addParticipant,
-	getParticipantWithEmail: getParticipantWithEmail
+	getParticipantBySlackName: getParticipantBySlackName
 }

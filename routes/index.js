@@ -58,7 +58,12 @@ router.post('/computeprice', function(req, res, next) {
 })
 
 router.post('/charge', function(req, res, next) {
-	charge.charge(req.body).then(function () {
+	const currentUser = req.session.currentUser
+	if (!currentUser || !currentUser.slackName) return res.send({
+		success: false,
+		error: "You need to sign in to perform this action"
+	})
+	charge.charge(currentUser.slackName, req.body).then(function () {
 		res.send({
 			success: true
 		})
