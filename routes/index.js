@@ -13,25 +13,34 @@ const price = require('../middleware/price.js')
 const auth = require('../middleware/auth.js')
 const charge = require('../middleware/charge.js')
 
-router.get('/', function(req, res, next) {
-	retreat.get().then(function (formattedRetreat) {
+router.get('/', function(req, res) {
+  res.redirect('https://www.mangrove.io/retreats');
+})
+
+router.get('/:slug', function(req, res, next) {
+	const slug = req.params.slug;
+	retreat.get(slug).then(function (formattedRetreat) {
 		participants.get(formattedRetreat.id).then(function (formattedParticipants) {
 			faq.get(formattedRetreat.id).then(function (faq) {
 				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+				console.log(formattedRetreat.name)
 				res.render('index', _.merge(result, {
 					participants: formattedParticipants,
 					faq: faq,
-					slackRedirectUri: slackRedirectUri,
+					slackRedirectUri: slackRedirectUri + '/' + slug + '/auth',
 					slackClientId: slackClientId,
-					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null)
+					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
+					title: formattedRetreat.name + ' | Mangrove Retreats',
 				}))
 			})
 		})
 	}, function (error) { next(error) })
 })
 
-router.get('/auth', function(req, res, next) {
+router.get('/:slug/auth', function(req, res, next) {
+  const slug = req.params.slug;
 	auth.checkCode(req.query.code)
+	console.log(slug)
 	.then(function (slackName) {
 		// fetch user details
 		return auth.getCurrentUserDetail(slackName)
@@ -40,24 +49,25 @@ router.get('/auth', function(req, res, next) {
 		// save user details into session
 		req.session.currentUser = currentUserDetails
 		// redirect to home
-		res.redirect('/')
+		res.redirect('/' + slug)
 	}, function (error) {
 		next(error)
 	})
 })
 
-router.get('/logout', function(req, res, next) {
+router.get('/:slug/logout', function(req, res, next) {
+  const slug = req.params.slug;
 	req.session.currentUser = null
-	res.redirect('/')
+	res.redirect('/' + slug)
 })
 
-router.post('/computeprice', function(req, res, next) {
+router.post('/:slug/computeprice', function(req, res, next) {
 	price.compute(req.body).then(function (result) {
 		res.send(result)
 	}, function (err) { next(err) })
 })
 
-router.post('/charge', function(req, res, next) {
+router.post('/:slug/charge', function(req, res, next) {
 	const currentUser = req.session.currentUser
 	if (!currentUser) return res.send({
 		success: false,
@@ -75,11 +85,11 @@ router.post('/charge', function(req, res, next) {
 	})
 })
 
-router.get('/booked', function(req, res, next) {
+router.get('/:slug/booked', function(req, res, next) {
 	res.render('booked', {})
 })
 
-router.get('/booking_error', function(req, res, next) {
+router.get('/:slug/booking_error', function(req, res, next) {
 	res.render('booking_error', {})
 })
 

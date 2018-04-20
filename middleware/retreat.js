@@ -2,11 +2,11 @@ var airtable = require('../helpers/airtable.js')
 var dateFormatter = require('../helpers/dateFormatter.js')
 var weather = require('./weather.js')
 
-function getRetreat() {
+function getRetreat(slug) {
 	return new Promise(function (resolve, reject) {
 		airtable.retreat.select({
 			maxRecords: 1,
-			filterByFormula: "IS_BEFORE(NOW(), {Last Night})",
+			filterByFormula: `{Slug}='${slug}'`,
 		}).firstPage(function(err, records) {
 			if (err) return reject(err)
 			// TODO: properly handle when no ongoing retreat in Airtable
@@ -34,6 +34,8 @@ function getRetreat() {
 			channel: retreat.get('Channel'),
 			house : formatHouse(retreat),
 			price: formatPrice(retreat),
+			totalPrice: retreat.get('Total Price'),
+      generated: retreat.get('Generated'),
 			location: formatLocation(retreat),
 		}
 
