@@ -12,11 +12,9 @@ function getFormattedFAQ(retreatId) {
 			airtable.faq.select({
 				filterByFormula:  "{Retreat Id} = '" + retreatId + "'"
 			}).firstPage(function(err, records) {
-				if (err) { reject(err); return }
-				if (typeof records[0] !== 'undefined') {
-					const faq = records[0]
-					resolve(faq)
-				}
+				if (err) return reject(err)
+        if (!records.length) return reject("missing FAQ")
+        resolve(formatFAQ(records[0]))
 			})
 		})
 	}

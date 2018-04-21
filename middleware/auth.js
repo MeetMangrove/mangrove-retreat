@@ -13,42 +13,33 @@ function checkCode(code) {
 				if (!error && response.statusCode == 200) {
 					body = JSON.parse(body)
 					if (body.error) return reject(body.error)
-					getUserInfo(body.access_token, body.user_id).then(function (username) {
-						resolve(username)
-					})
+          // resolve with user AccessToken and Slack ID
+          resolve({
+            slackId: body.user_id,
+            accessToken: body.access_token,
+          })
 				} else { reject(error) }
 			})
 	})
 }
 
-function getUserInfo(token, userId) {
-	return new Promise(function (resolve, reject) {
-		request.get('https://slack.com/api/users.info?token=' + token + '&user=' + userId,
-		function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				body = JSON.parse(body)
-				if (body.error) return reject(body.error)
-				resolve(body.user.name)
-			} else { reject(error) }
-		})
-	})
-}
-
-function getCurrentUserDetail(username) {
+// retrieves details about a Member from Airtable based on their Slack ID
+function getMemberBySlackId(slackId) {
 	return new Promise(function (resolve, reject) {
 		airtable.members.select({
-			filterByFormula: "{Slack Handle} = '@" + username + "'"
+      maxRecords: 10,
+			filterByFormula: `{Slack ID} = '${slackId}'`,
 		}).firstPage(function(err, records) {
 			if (err) { reject(err); return }
 			if (typeof records[0] !== 'undefined') {
-				resolve(formatCurrentUser(records[0]))
+				resolve(formatMember(records[0]))
 			} else {
 				reject('No members found matching username : ' + username)
 			}
 		})
 	})
 
-	function formatCurrentUser(currentUser) {
+	function formatMember(currentUser) {
 		const tw = currentUser.get('Twitter') && currentUser.get('Twitter').length ? currentUser.get('Twitter') : null
 		const img = tw ? 'https://twitter.com/' + tw + '/profile_image?size=original' : null
 
@@ -64,5 +55,5 @@ function getCurrentUserDetail(username) {
 
 module.exports = {
 	checkCode: checkCode,
-	getCurrentUserDetail: getCurrentUserDetail
+	getMemberBySlackId: getMemberBySlackId
 }

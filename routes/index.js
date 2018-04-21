@@ -2,8 +2,6 @@ const _ = require('lodash')
 const express = require('express')
 const router = express.Router()
 const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY ? process.env.STRIPE_PUBLISHABLE_KEY : 'pk_test_BFpNYeuEnZ50FMwhi59JZs2c'
-const slackRedirectUri = process.env.SLACK_REDIRECT_URI
-const slackClientId = process.env.SLACK_CLIENT_ID
 const bedsCounter = require('../helpers/bedsCounter.js')
 
 const participants = require('../middleware/participants.js')
@@ -13,52 +11,51 @@ const price = require('../middleware/price.js')
 const auth = require('../middleware/auth.js')
 const charge = require('../middleware/charge.js')
 
-router.get('/', function(req, res) {
-  res.redirect('https://www.mangrove.io/retreats');
+router.get('/', function(req, res, next) {
+  // find the "current" retreat and redirect to it
+  retreat.getCurrent().then(function(retreat) {
+    res.redirect(`/${retreat.slug}`)
+  }).catch(function(err) {next(err)})
 })
 
-router.get('/:slug', function(req, res, next) {
-	const slug = req.params.slug;
-	retreat.get(slug).then(function (formattedRetreat) {
-		participants.get(formattedRetreat.id).then(function (formattedParticipants) {
-			faq.get(formattedRetreat.id).then(function (faq) {
-				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
-				console.log(formattedRetreat.name)
-				res.render('index', _.merge(result, {
-					participants: formattedParticipants,
-					faq: faq,
-					slackRedirectUri: slackRedirectUri + '/' + slug + '/auth',
-					slackClientId: slackClientId,
-					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
-					title: formattedRetreat.name + ' | Mangrove Retreats',
-				}))
-			})
-		})
-	}, function (error) { next(error) })
-})
-
-router.get('/:slug/auth', function(req, res, next) {
-  const slug = req.params.slug;
+router.get('/auth', function(req, res, next) {
 	auth.checkCode(req.query.code)
-	console.log(slug)
-	.then(function (slackName) {
+	.then(function ({slackId}) {
 		// fetch user details
-		return auth.getCurrentUserDetail(slackName)
+		return auth.getMemberBySlackId(slackId)
 	})
 	.then(function(currentUserDetails) {
 		// save user details into session
 		req.session.currentUser = currentUserDetails
 		// redirect to home
-		res.redirect('/' + slug)
+		res.redirect('/')
 	}, function (error) {
 		next(error)
 	})
 })
 
-router.get('/:slug/logout', function(req, res, next) {
-  const slug = req.params.slug;
+router.get('/logout', function(req, res, next) {
 	req.session.currentUser = null
-	res.redirect('/' + slug)
+	res.redirect('/')
+})
+
+router.get('/:slug', function(req, res, next) {
+	const slug = req.params.slug;
+	retreat.get(slug).then(function (formattedRetreat) {
+		return participants.get(formattedRetreat.id).then(function (formattedParticipants) {
+			return faq.get(formattedRetreat.id).then(function (faq) {
+				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+				console.log(formattedRetreat.name)
+				res.render('index', _.merge(result, {
+					participants: formattedParticipants,
+					faq: faq,
+					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
+					title: formattedRetreat.name + ' | Mangrove Retreats',
+				}))
+			})
+		})
+	})
+  .catch(function (error) { next(error) })
 })
 
 router.post('/:slug/computeprice', function(req, res, next) {

@@ -11,6 +11,14 @@ var sassMiddleware = require('node-sass-middleware')
 var postcssMiddleware = require('postcss-middleware');
 var autoprefixer = require('autoprefixer');
 
+const slackRedirectUri = process.env.SLACK_REDIRECT_URI
+const slackClientId = process.env.SLACK_CLIENT_ID
+const slackTeamName = (process.env.SLACK_TEAM_NAME || 'mangroveteam')
+const slackAuthorizeUri = "https://slack.com/oauth/authorize?" +
+  "team=" + slackTeamName +
+  "&scope=users:read&client_id=" + slackClientId +
+  "&redirect_uri=" + slackRedirectUri
+
 var index = require('./routes/index')
 
 var app = express()
@@ -35,6 +43,8 @@ app.set('view engine', 'pug');
 // locals
 app.locals._  = _;
 app.locals.cx = require('classnames');
+app.locals.slackAuthorizeUri = slackAuthorizeUri
+app.locals.slackRedirectUri = slackRedirectUri
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -81,7 +91,7 @@ app.use(function(err, req, res, next) {
 // proper logging of UnhandledPromiseRejection
 process.on('unhandledRejection', function(reason, p) {
 	console.log("Possibly Unhandled Rejection at: Promise ",
-		p, " reason: ", reason, reason.message)
+		p, " reason: ", reason, reason ? reason.message : null)
 })
 
 module.exports = app
