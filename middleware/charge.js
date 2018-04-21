@@ -4,16 +4,16 @@ const stripe = require('stripe')(stripeSecretKey)
 const price = require('./price.js')
 const participants = require('./participants.js')
 
-function charge(slackName, params) {
+function charge(memberAirtableId, params) {
 	return new Promise(function (resolve, reject) {
 		price.compute(params)
 		.then(function (result) {
 			if (result.canBook) {
-				participants.getParticipantBySlackName(slackName).then(function (participant) {
+				participants.getParticipantByMemberId(memberAirtableId).then(function (participant) {
 					stripe.customers.create({
 						email: params.email,
 						source: params.tokenId,
-						description: ("Slack: @" + slackName),
+						description: (`Member ID: ${memberAirtableId}`),
 					}).then(function (customer) {
 						const amountInCents = result.price * 100
 						stripe.charges.create({

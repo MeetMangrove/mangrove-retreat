@@ -163,14 +163,12 @@ function addParticipant(id, retreatId, firstNight, lastNight) {
 	})
 }
 
-function getParticipantBySlackName(slackName) {
+function getParticipantByMemberId(memberAirtableId) {
 	return new Promise(function (resolve, reject) {
-		airtable.members.select({
-			filterByFormula: "{Slack Handle} = '" + slackName.replace(/^@?/, '@') + "'"
-		}).firstPage(function(err, records) {
+		airtable.members.find(memberAirtableId, function(err, record) {
 			if (err) return reject(err)
-			if (!records.length) return reject('No members found matching Slack handle : ' + slackName)
-			resolve(records[0])
+			if (!record) return reject(`no Member with id=${memberAirtableId}`)
+			resolve(record)
 		})
 	})
 }
@@ -178,5 +176,5 @@ function getParticipantBySlackName(slackName) {
 module.exports = {
 	get: getFormattedParticipantsIncludingDetails,
 	add: addParticipant,
-	getParticipantBySlackName: getParticipantBySlackName
+	getParticipantByMemberId: getParticipantByMemberId
 }

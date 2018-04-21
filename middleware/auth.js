@@ -46,7 +46,7 @@ function getMemberBySlackId(slackId) {
 		return {
 			id: currentUser.id,
 			name: currentUser.get('Name'),
-			username: currentUser.get('Slack Handle'),
+      slackId: currentUser.get('Slack ID'),
 			color: 'black',
 			avatar_url: img
 		}

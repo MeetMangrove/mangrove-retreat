@@ -113,8 +113,9 @@ function computePrice(that, selectedDays) {
 
 	selectedDays = datify(selectedDays)
 
-	$.post('computeprice',
-		{ retreatId: config.retreatId,
+	$.post('/' + config.retreatSlug + '/computeprice',
+		{
+      retreatId: config.retreatId,
 			firstNight: selectedDays[0],
 			lastNight:  selectedDays[selectedDays.length - 1]
 		}, function(data){

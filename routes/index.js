@@ -44,9 +44,8 @@ router.get('/:slug', function(req, res, next) {
 	retreat.get(slug).then(function (formattedRetreat) {
 		return participants.get(formattedRetreat.id).then(function (formattedParticipants) {
 			return faq.get(formattedRetreat.id).then(function (faq) {
-				var result = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
-				console.log(formattedRetreat.name)
-				res.render('index', _.merge(result, {
+				const retreat = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+				res.render('index', _.merge({}, retreat, {
 					participants: formattedParticipants,
 					faq: faq,
 					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
@@ -66,11 +65,12 @@ router.post('/:slug/computeprice', function(req, res, next) {
 
 router.post('/:slug/charge', function(req, res, next) {
 	const currentUser = req.session.currentUser
+  console.log("CUR", currentUser)
 	if (!currentUser) return res.send({
 		success: false,
 		error: "You need to sign in to perform this action"
 	})
-	charge.charge(currentUser.username, req.body).then(function () {
+	charge.charge(currentUser.id, req.body).then(function () {
 		res.send({
 			success: true
 		})

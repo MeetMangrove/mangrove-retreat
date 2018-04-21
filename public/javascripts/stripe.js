@@ -16,8 +16,8 @@ function openStripeCheckout(stripeParams, tokenCallback) {
 }
 
 function postStripeTokenAndInfos(token, retreatId, firstNight, lastNight) {
-	$.post('charge', {
-		tokenId:token.id,
+	$.post('/' + config.retreatSlug + '/charge', {
+		tokenId: token.id,
 		email: token.email,
 		retreatId: retreatId,
 		firstNight: firstNight,
