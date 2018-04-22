@@ -1,4 +1,4 @@
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY : 'sk_test_5T8O9RZssCDArs5Qvab937KI'
+const {stripeSecretKey} = require('../src/constants.js')
 const stripe = require('stripe')(stripeSecretKey)
 
 const price = require('./price.js')

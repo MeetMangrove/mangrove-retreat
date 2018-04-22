@@ -1,5 +1,9 @@
 var Airtable = require('airtable')
-var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_KEY)
+const {airtableApiKey, airtableBaseKey} = require('../src/constants.js')
+
+
+var base = new Airtable({apiKey: airtableApiKey}).base(airtableBaseKey)
+
 
 module.exports = {
   retreat: base('Retreats'),

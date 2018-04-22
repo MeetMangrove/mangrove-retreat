@@ -10,6 +10,8 @@ const price = require('../middleware/price.js')
 const auth = require('../middleware/auth.js')
 const charge = require('../middleware/charge.js')
 
+const {slackTeamName, slackClientId, slackRedirectUri, slackAuthorizeUri} = require('../src/constants.js')
+
 
 router.get('/', function(req, res, next) {
   // find the "current" retreat and redirect to it
@@ -22,7 +24,8 @@ router.get('/login', function (req, res, next) {
   // store last visited retreat
   req.session.oauth_return_uri = req.query.return_uri
 
-  // @todo redirect to slack
+  // redirect user to slack authorize
+  res.redirect(slackAuthorizeUri)
 })
 
 router.get('/auth', function(req, res, next) {
@@ -34,9 +37,8 @@ router.get('/auth', function(req, res, next) {
   .then(function(currentUserDetails) {
     // save user details into session
     req.session.currentUser = currentUserDetails
-    // redirect to home
-    res.redirect('/')
-    // @todo req.session.oauth_redirect_uri 
+    // redirect to last visited retreat page or home
+    res.redirect('/' + (req.session.oauth_return_uri || ''))
   }, function (error) {
     next(error)
   })

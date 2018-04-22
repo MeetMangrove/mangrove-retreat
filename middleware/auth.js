@@ -1,8 +1,6 @@
 const request = require('request')
-const clientId = process.env.SLACK_CLIENT_ID
-const clientSecret = process.env.SLACK_CLIENT_SECRET
-const slackRedirectUri = process.env.SLACK_REDIRECT_URI
 const airtable = require('../helpers/airtable.js')
+const {slackTeamName, slackClientId, slackRedirectUri, slackAuthorizeUri} = require('../src/constants.js')
 
 
 function checkCode(code) {
