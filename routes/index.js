@@ -10,6 +10,7 @@ const price = require('../middleware/price.js')
 const auth = require('../middleware/auth.js')
 const charge = require('../middleware/charge.js')
 
+
 router.get('/', function(req, res, next) {
   // find the "current" retreat and redirect to it
   retreat.getCurrent().then(function(retreat) {
@@ -17,73 +18,81 @@ router.get('/', function(req, res, next) {
   }).catch(function(err) {next(err)})
 })
 
+router.get('/login', function (req, res, next) {
+  // store last visited retreat
+  req.session.oauth_return_uri = req.query.return_uri
+
+  // @todo redirect to slack
+})
+
 router.get('/auth', function(req, res, next) {
-	auth.checkCode(req.query.code)
-	.then(function ({slackId}) {
-		// fetch user details
-		return auth.getMemberBySlackId(slackId)
-	})
-	.then(function(currentUserDetails) {
-		// save user details into session
-		req.session.currentUser = currentUserDetails
-		// redirect to home
-		res.redirect('/')
-	}, function (error) {
-		next(error)
-	})
+  auth.checkCode(req.query.code)
+  .then(function ({slackId}) {
+    // fetch user details
+    return auth.getMemberBySlackId(slackId)
+  })
+  .then(function(currentUserDetails) {
+    // save user details into session
+    req.session.currentUser = currentUserDetails
+    // redirect to home
+    res.redirect('/')
+    // @todo req.session.oauth_redirect_uri 
+  }, function (error) {
+    next(error)
+  })
 })
 
 router.get('/logout', function(req, res) {
-	req.session.currentUser = null
-	res.redirect('/')
+  req.session.currentUser = null
+  res.redirect('/')
 })
 
 router.get('/:slug', function(req, res, next) {
-	const slug = req.params.slug;
-	retreat.get(slug).then(function (formattedRetreat) {
-		return participants.get(formattedRetreat.id).then(function (formattedParticipants) {
-			const retreat = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
-			res.render('index', _.merge({}, retreat, {
-				participants: formattedParticipants,
-				stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
-				title: formattedRetreat.name + ' | Mangrove Retreats',
-			}))
-		})
-	})
+  const slug = req.params.slug;
+  retreat.get(slug).then(function (formattedRetreat) {
+    return participants.get(formattedRetreat.id).then(function (formattedParticipants) {
+      const retreat = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+      res.render('index', _.merge({}, retreat, {
+        participants: formattedParticipants,
+        stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
+        title: formattedRetreat.name + ' | Mangrove Retreats',
+      }))
+    })
+  })
   .catch(function (error) { next(error) })
 })
 
 router.post('/:slug/computeprice', function(req, res, next) {
-	price.compute(req.body).then(function (result) {
-		res.send(result)
-	}, function (err) { next(err) })
+  price.compute(req.body).then(function (result) {
+    res.send(result)
+  }, function (err) { next(err) })
 })
 
 router.post('/:slug/charge', function(req, res, next) {
-	const currentUser = req.session.currentUser
+  const currentUser = req.session.currentUser
   console.log("CUR", currentUser)
-	if (!currentUser) return res.send({
-		success: false,
-		error: "You need to sign in to perform this action"
-	})
-	charge.charge(currentUser.id, req.body).then(function () {
-		res.send({
-			success: true
-		})
-	}, function (error) {
-		res.send({
-			success: false,
-			error: error
-		})
-	})
+  if (!currentUser) return res.send({
+    success: false,
+    error: "You need to sign in to perform this action"
+  })
+  charge.charge(currentUser.id, req.body).then(function () {
+    res.send({
+      success: true
+    })
+  }, function (error) {
+    res.send({
+      success: false,
+      error: error
+    })
+  })
 })
 
 router.get('/:slug/booked', function(req, res, next) {
-	res.render('booked', {})
+  res.render('booked', {})
 })
 
 router.get('/:slug/booking_error', function(req, res, next) {
-	res.render('booking_error', {})
+  res.render('booking_error', {})
 })
 
 module.exports = router;
