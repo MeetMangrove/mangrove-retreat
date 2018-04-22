@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "web": "node ./bin/www"
+    "web": "node ./bin/www",
+    "pretest": "eslint --ignore-path .gitignore ."
   },
   "engines": {
     "node": ">=8.0"
@@ -31,6 +32,7 @@
     "stripe": "^4.17.1"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
     "nodemon": "1.17.3"
   }
 }
