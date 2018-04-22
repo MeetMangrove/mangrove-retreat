@@ -105,7 +105,7 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
             id: formattedParticipant.id,
             days: formattedParticipant.days,
             name: detailedParticipant.get('Name'),
-            username: detailedParticipant.get('Slack Handle'),
+            username: detailedParticipant.get('Name'),
             color: colors[i],
             avatar_url: img
           })
