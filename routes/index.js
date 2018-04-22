@@ -6,7 +6,6 @@ const bedsCounter = require('../helpers/bedsCounter.js')
 
 const participants = require('../middleware/participants.js')
 const retreat = require('../middleware/retreat.js')
-const faq = require('../middleware/faq.js')
 const price = require('../middleware/price.js')
 const auth = require('../middleware/auth.js')
 const charge = require('../middleware/charge.js')
@@ -34,7 +33,7 @@ router.get('/auth', function(req, res, next) {
 	})
 })
 
-router.get('/logout', function(req, res, next) {
+router.get('/logout', function(req, res) {
 	req.session.currentUser = null
 	res.redirect('/')
 })
@@ -43,15 +42,12 @@ router.get('/:slug', function(req, res, next) {
 	const slug = req.params.slug;
 	retreat.get(slug).then(function (formattedRetreat) {
 		return participants.get(formattedRetreat.id).then(function (formattedParticipants) {
-			return faq.get(formattedRetreat.id).then(function (faq) {
-				const retreat = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
-				res.render('index', _.merge({}, retreat, {
-					participants: formattedParticipants,
-					faq: faq,
-					stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
-					title: formattedRetreat.name + ' | Mangrove Retreats',
-				}))
-			})
+			const retreat = bedsCounter.addBedsCountPerWeek(formattedRetreat, formattedParticipants)
+			res.render('index', _.merge({}, retreat, {
+				participants: formattedParticipants,
+				stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
+				title: formattedRetreat.name + ' | Mangrove Retreats',
+			}))
 		})
 	})
   .catch(function (error) { next(error) })
