@@ -5,14 +5,14 @@ var dateFormatter = require('../helpers/dateFormatter.js')
 var weather = require('./weather.js')
 
 function getRetreat(slug) {
-	return new Promise(function (resolve, reject) {
-		airtable.retreat.select({
-			maxRecords: 1,
-			filterByFormula: `{Slug}='${slug}'`,
-		}).firstPage(function(err, records) {
-			if (err) return reject(err)
-			// TODO: properly handle when no ongoing retreat in Airtable
-			if (!records.length) return reject("found no ongoing retreats on Airtable")
+  return new Promise(function (resolve, reject) {
+    airtable.retreat.select({
+      maxRecords: 1,
+      filterByFormula: `{Slug}='${slug}'`,
+    }).firstPage(function(err, records) {
+      if (err) return reject(err)
+      // TODO: properly handle when no ongoing retreat in Airtable
+      if (!records.length) return reject("found no ongoing retreats on Airtable")
       resolve(records[0])
     })
   })
@@ -43,37 +43,37 @@ function getRetreat(slug) {
 }
 
 function getOrganizer(retreat) {
-	return new Promise(function (resolve, reject) {
-		const organizerId = retreat.get('Organizer')[0]
-		if (typeof organizerId !== 'undefined') {
-			airtable.retreat.find(organizerId, function(err, organizer) {
-				if (err) { reject(err); return }
-				resolve(formatOrganizer(organizer))
-			})
-		}
-	})
+  return new Promise(function (resolve, reject) {
+    const organizerId = retreat.get('Organizer')[0]
+    if (typeof organizerId !== 'undefined') {
+      airtable.retreat.find(organizerId, function(err, organizer) {
+        if (err) { reject(err); return }
+        resolve(formatOrganizer(organizer))
+      })
+    }
+  })
 
-	function formatOrganizer(organizer) {
-		return {
-			id: organizer.id,
-			name: organizer.get('Name'),
-			username: organizer.get('Slack Handle')
-		}
-	}
+  function formatOrganizer(organizer) {
+    return {
+      id: organizer.id,
+      name: organizer.get('Name'),
+      username: organizer.get('Slack Handle')
+    }
+  }
 }
 
 
 function getCurrent() {
   return new Promise(function (resolve, reject) {
-		airtable.retreat.select({
+    airtable.retreat.select({
       // TODO: this fetches the 10 most recent retreats which is not technically
       // guaranteed to include the one closest to today, but looks good enough
-			maxRecords: 10,
+      maxRecords: 10,
       sort: [{field: 'First Night', direction: 'desc'}],
-		}).firstPage(function(err, records) {
-			if (err) return reject(err)
+    }).firstPage(function(err, records) {
+      if (err) return reject(err)
       if (!records.length) return reject(`no retreats found on Airtable`)
-			// pick retreat closest to today
+      // pick retreat closest to today
       const now = moment()
       const closest = _.first(_.orderBy(records, function(r) {
         return Math.abs(now.diff(r.get('First Night')))
@@ -85,62 +85,62 @@ function getCurrent() {
 
 
 function formatRetreat(retreat) {
-	return {
-		id: retreat.id,
+  return {
+    id: retreat.id,
     slug: retreat.get('Slug'),
-		weeks: dateFormatter.formatWeeks(retreat.get('First Night'), retreat.get('Last Night')),
-		name: retreat.get('Name'),
-		description: retreat.get('Description'),
-		channel: retreat.get('Channel'),
-		house : formatHouse(retreat),
-		price: formatPrice(retreat),
-		totalPrice: retreat.get('Total Price'),
+    weeks: dateFormatter.formatWeeks(retreat.get('First Night'), retreat.get('Last Night')),
+    name: retreat.get('Name'),
+    description: retreat.get('Description'),
+    channel: retreat.get('Channel'),
+    house : formatHouse(retreat),
+    price: formatPrice(retreat),
+    totalPrice: retreat.get('Total Price'),
     generated: retreat.get('Generated'),
-		location: formatLocation(retreat),
-	}
+    location: formatLocation(retreat),
+  }
 
-	function formatHouse(retreat) {
-		return {
-			url: retreat.get('House Url'),
-			beds: retreat.get('Beds'),
-			pictures: formatPictures(retreat.get('Pictures')),
-			rentPrice: retreat.get('House Rent Price')
-		}
+  function formatHouse(retreat) {
+    return {
+      url: retreat.get('House Url'),
+      beds: retreat.get('Beds'),
+      pictures: formatPictures(retreat.get('Pictures')),
+      rentPrice: retreat.get('House Rent Price')
+    }
 
-		function formatPictures(pictures) {
-			var formattedPictures = []
+    function formatPictures(pictures) {
+      var formattedPictures = []
 
-			if (typeof pictures !== 'undefined') {
-				for (var i = 0; i < pictures.length; i++) {
-					var picture = pictures[i]
-					formattedPictures.push(picture.url)
-				}
-			}
+      if (typeof pictures !== 'undefined') {
+        for (var i = 0; i < pictures.length; i++) {
+          var picture = pictures[i]
+          formattedPictures.push(picture.url)
+        }
+      }
 
-			return formattedPictures
-		}
-	}
+      return formattedPictures
+    }
+  }
 
-	function formatPrice(retreat) {
-		return {
-			perWeek: retreat.get('Price Per Week'),
-			perNight: retreat.get('Price Per Night'),
-			weekDiscount: retreat.get('Week Discount')
-		}
-	}
+  function formatPrice(retreat) {
+    return {
+      perWeek: retreat.get('Price Per Week'),
+      perNight: retreat.get('Price Per Night'),
+      weekDiscount: retreat.get('Week Discount')
+    }
+  }
 
-	function formatLocation(retreat) {
-		return {
-			latitude: retreat.get('Latitude'),
-			longitude: retreat.get('Longitude'),
-			fullAddress: retreat.get('Address'),
-			city: retreat.get('City'),
-			country: retreat.get('Country')
-		}
-	}
+  function formatLocation(retreat) {
+    return {
+      latitude: retreat.get('Latitude'),
+      longitude: retreat.get('Longitude'),
+      fullAddress: retreat.get('Address'),
+      city: retreat.get('City'),
+      country: retreat.get('Country')
+    }
+  }
 }
 
 module.exports = {
-	get: getRetreat,
+  get: getRetreat,
   getCurrent,
 }

@@ -25,7 +25,7 @@ var app = express()
 
 // session cookies
 app.use(cookieSession({
-	name: 'mangrove-retreat-session',
+  name: 'mangrove-retreat-session',
   keys: _.filter([process.env.SECRET_KEY, 'M@ngR0ve']),
   maxAge: 30 * 24 * 3600 * 1000 // 30 days
 }))
@@ -54,17 +54,17 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 
 app.use('/stylesheets', sassMiddleware({
-	src:  __dirname + '/public/sass',
-	dest: __dirname + '/public/stylesheets',
-	debug: true,
-	outputStyle: 'expanded'
+  src:  __dirname + '/public/sass',
+  dest: __dirname + '/public/stylesheets',
+  debug: true,
+  outputStyle: 'expanded'
 }))
 
 app.use('/stylesheets', postcssMiddleware({
-	src: function(req) {
-		return path.join(__dirname, 'public', 'stylesheets', req.path)
-	},
-	plugins: [autoprefixer()]
+  src: function(req) {
+    return path.join(__dirname, 'public', 'stylesheets', req.path)
+  },
+  plugins: [autoprefixer()]
 }))
 
 app.use(express.static(path.join(__dirname, 'public')))
@@ -73,25 +73,25 @@ app.use('/', index)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-	var err = new Error('Not Found')
-	err.status = 404
-	next(err)
+  var err = new Error('Not Found')
+  err.status = 404
+  next(err)
 })
 
 // error handler
 app.use(function(err, req, res, next) {
-	// set locals, only providing error in development
-	const isDev = req.app.get('env') === 'development'
+  // set locals, only providing error in development
+  const isDev = req.app.get('env') === 'development'
 
-	// render the error page
-	res.status(err.status || 500)
-	res.render('error', {error: isDev ? err : null})
+  // render the error page
+  res.status(err.status || 500)
+  res.render('error', {error: isDev ? err : null})
 })
 
 // proper logging of UnhandledPromiseRejection
 process.on('unhandledRejection', function(reason, p) {
-	console.log("Possibly Unhandled Rejection at: Promise ",
-		p, " reason: ", reason, reason ? reason.message : null)
+  console.log("Possibly Unhandled Rejection at: Promise ",
+    p, " reason: ", reason, reason ? reason.message : null)
 })
 
 module.exports = app
