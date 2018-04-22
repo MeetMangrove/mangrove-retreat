@@ -6,6 +6,9 @@
     "start": "nodemon ./bin/www",
     "web": "node ./bin/www"
   },
+  "engines": {
+    "node": ">=8.0"
+  },
   "dependencies": {
     "airtable": "^0.4.5",
     "autoprefixer": "^6.7.7",
