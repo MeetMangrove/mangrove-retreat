@@ -17,15 +17,18 @@
 
     include map
     .house-section-datas
-      .data-item
-        .data-item-header #{weeks.length} weeks
-        .data-item-footer booked
-      .data-item
-        .data-item-header #{totalPrice}€
-        .data-item-footer total price
-      .data-item
-        .data-item-header #{generated}€
-        .data-item-footer generated
+      if weeks.length
+        .data-item
+          .data-item-header #{weeks.length} weeks
+          .data-item-footer booked
+      if totalPrice
+        .data-item
+          .data-item-header #{totalPrice}€
+          .data-item-footer total price
+      if generated
+        .data-item
+          .data-item-header #{generated}€
+          .data-item-footer generated
 
 
 

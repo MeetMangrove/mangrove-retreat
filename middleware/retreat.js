@@ -97,6 +97,7 @@ function formatRetreat(retreat) {
     totalPrice: retreat.get('Total Price'),
     generated: retreat.get('Generated'),
     location: formatLocation(retreat),
+    isSummit: retreat.get('Is summit ?'),
   }
 
   function formatHouse(retreat) {

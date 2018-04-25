@@ -4,3 +4,10 @@
             iframe(type='text/html'
             src='http://www.youtube.com/embed/3OVhSbP7KZI'
             frameborder='0')
+    .intro-button-video
+        a(href="https://mangrove.typeform.com/to/uxvnIV", target='_blank')
+            button
+                if isSummit
+                    = "Apply to this summit"
+                else
+                    = "Apply to this retreat"

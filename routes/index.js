@@ -56,6 +56,7 @@ router.get('/:slug', function(req, res, next) {
         participants: formattedParticipants,
         stripePublishableKey: (req.session.currentUser ? stripePublishableKey : null),
         title: formattedRetreat.name + ' | Mangrove Retreats',
+        isSummit: formattedRetreat.isSummit
       }))
     })
   })

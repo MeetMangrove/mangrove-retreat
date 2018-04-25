@@ -90,24 +90,21 @@ function getFormattedParticipantsIncludingDetails(retreatId) {
   }
 
   function getCombinedParticipants(formattedParticipants, detailedParticipants) {
-    var combinedParticipants = []
+    const combinedParticipants = []
     const colors = getColors(detailedParticipants.length)
 
-    for (var i = 0; i < detailedParticipants.length; i++) {
-      var detailedParticipant = detailedParticipants[i]
-      for (var j = 0; j < formattedParticipants.length; j++) {
-        var formattedParticipant = formattedParticipants[j]
+    for (let i = 0; i < detailedParticipants.length; i++) {
+      const detailedParticipant = detailedParticipants[i]
+      for (let j = 0; j < formattedParticipants.length; j++) {
+        const formattedParticipant = formattedParticipants[j]
         if (formattedParticipant.id === detailedParticipant.id) {
-          var tw = detailedParticipant.get('Twitter') && detailedParticipant.get('Twitter').length ? detailedParticipant.get('Twitter') : null
-          var img = tw ? 'https://twitter.com/' + tw + '/profile_image?size=original' : null
-
           combinedParticipants.push({
             id: formattedParticipant.id,
             days: formattedParticipant.days,
             name: detailedParticipant.get('Name'),
             username: detailedParticipant.get('Name'),
             color: colors[i],
-            avatar_url: img
+            avatar_url: detailedParticipant.get('Profile Picture')[0].url
           })
           break
         }

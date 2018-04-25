@@ -1,10 +1,8 @@
 extends layout
 block content
+  .center-line
   include includes/hero
-  .booking-board-lines
-    each week, index in weeks
-      .booking-board-line
-  include includes/booking_board.pug
+  include includes/booking_board
   include includes/house_section
   include includes/faq
   include includes/video

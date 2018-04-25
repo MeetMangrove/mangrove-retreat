@@ -2,7 +2,11 @@
   .hero
     .intro-button
       a(href="https://mangrove.typeform.com/to/uxvnIV", target='_blank')
-        button Apply to this retreat
+        button
+          if isSummit
+            = "Apply to this summit"
+          else
+            = "Apply to this retreat"
     .hero-scene-wrapper
       .hero-scene
         each pictureUrl in house.pictures.slice(0, 2)
@@ -26,11 +30,13 @@
 
     .hero-title Mangrove is heading to <strong>#{location.country}</strong>
     .hero-prices
-      .data-item
-        .data-item-header #{price.perNight}€
-        .data-item-footer per night
-      .data-item
-        .data-item-header.is-alpha  #{price.perWeek}€
-        .data-item-footer per week
+      if price.perNight
+          .data-item
+            .data-item-header #{price.perNight}€
+            .data-item-footer per night
+      if price.perWeek
+        .data-item
+          .data-item-header.is-alpha  #{price.perWeek}€
+          .data-item-footer per week
 
 
