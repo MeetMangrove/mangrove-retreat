@@ -5,7 +5,7 @@ function formatDay(date) {
     id: months[date.getMonth()] + date.getDate(),
     name: weekDays[date.getDay()],
     number: date.getDate(),
-    month: months[date.getMonth()],
+    month: months[date.getMonth() - 1],
     date: date
   }
 }
